@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ApplicationManifest ApplicationTypeName="TripPlannerApplicationType"
+                     ApplicationTypeVersion="1.0.0"
+                     xmlns="http://schemas.microsoft.com/2011/01/fabric"
+                     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Parameters>
+    <Parameter Name="BackendSF_InstanceCount" DefaultValue="1" />
+    <Parameter Name="ValidatorService_InstanceCount" DefaultValue="1" />
+  </Parameters>
+
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="BackendSFPkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides />
+  </ServiceManifestImport>
+
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="ValidatorServicePkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides />
+  </ServiceManifestImport>
+
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="ShareServicePkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides />
+  </ServiceManifestImport>
+
+  <ServiceManifestImport>
+    <ServiceManifestRef ServiceManifestName="EventDispatcherServicePkg" ServiceManifestVersion="1.0.0" />
+    <ConfigOverrides />
+  </ServiceManifestImport>
+
+  <DefaultServices>
+    <Service Name="BackendSF">
+      <StatelessService ServiceTypeName="BackendSFType" InstanceCount="[BackendSF_InstanceCount]">
+        <SingletonPartition />
+      </StatelessService>
+    </Service>
+
+    <Service Name="ValidatorService">
+      <StatelessService ServiceTypeName="ValidatorServiceType" InstanceCount="[ValidatorService_InstanceCount]">
+        <SingletonPartition />
+      </StatelessService>
+    </Service>
+
+    <Service Name="ShareService">
+      <StatefulService ServiceTypeName="ShareServiceType" TargetReplicaSetSize="1" MinReplicaSetSize="1">
+        <SingletonPartition />
+      </StatefulService>
+    </Service>
+
+    <Service Name="EventDispatcherService">
+      <StatefulService ServiceTypeName="EventDispatcherServiceType" TargetReplicaSetSize="1" MinReplicaSetSize="1">
+        <SingletonPartition />
+      </StatefulService>
+    </Service>
+  </DefaultServices>
+</ApplicationManifest>

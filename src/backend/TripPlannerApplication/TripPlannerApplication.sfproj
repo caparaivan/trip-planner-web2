@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4B398A58-88F8-4C8D-94A0-4E0B0F1FB7E1}</ProjectGuid>
+    <ProjectVersion>2.0</ProjectVersion>
+    <MinToolsVersion>1.5</MinToolsVersion>
+    <SupportedMSBuildNuGetPackageVersion>1.7.6</SupportedMSBuildNuGetPackageVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <ApplicationProjectTargetsPath>$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Service Fabric Tools\Microsoft.VisualStudio.Azure.Fabric.Application.targets</ApplicationProjectTargetsPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="ApplicationPackageRoot\ApplicationManifest.xml" />
+    <None Include="ApplicationPackageRoot\BackendSFPkg\ServiceManifest.xml" />
+    <None Include="ApplicationPackageRoot\ValidatorServicePkg\ServiceManifest.xml" />
+    <None Include="ApplicationPackageRoot\ShareServicePkg\ServiceManifest.xml" />
+    <None Include="ApplicationPackageRoot\EventDispatcherServicePkg\ServiceManifest.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BackendSF\BackendSF.csproj">
+      <Name>BackendSF</Name>
+      <RoleType>Stateless</RoleType>
+      <ServiceProjectName>BackendSF</ServiceProjectName>
+    </ProjectReference>
+    <ProjectReference Include="..\ValidatorService\ValidatorService.csproj">
+      <Name>ValidatorService</Name>
+      <RoleType>Stateless</RoleType>
+      <ServiceProjectName>ValidatorService</ServiceProjectName>
+    </ProjectReference>
+    <ProjectReference Include="..\ShareService\ShareService.csproj">
+      <Name>ShareService</Name>
+      <RoleType>Stateful</RoleType>
+      <ServiceProjectName>ShareService</ServiceProjectName>
+    </ProjectReference>
+    <ProjectReference Include="..\EventDispatcherService\EventDispatcherService.csproj">
+      <Name>EventDispatcherService</Name>
+      <RoleType>Stateful</RoleType>
+      <ServiceProjectName>EventDispatcherService</ServiceProjectName>
+    </ProjectReference>
+  </ItemGroup>
+
+  <Import Project="$(ApplicationProjectTargetsPath)" Condition="Exists('$(ApplicationProjectTargetsPath)')" />
+</Project>
