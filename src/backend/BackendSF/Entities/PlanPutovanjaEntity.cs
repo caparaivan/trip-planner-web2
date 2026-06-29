@@ -1,0 +1,32 @@
+namespace BackendSF.Entities;
+
+public sealed class PlanPutovanjaEntity
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+
+    public int UserId { get; set; }
+
+    public UserEntity? User { get; set; }
+
+    public string Naziv { get; set; } = string.Empty;
+
+    public string? KratakOpis { get; set; }
+
+    public DateTime PocetniDatum { get; set; }
+
+    public DateTime KrajnjiDatum { get; set; }
+
+    public decimal PlaniraniBudzet { get; set; }
+
+    public string? OpsteNapomene { get; set; }
+
+    public DateTime DatumKreiranjaUtc { get; set; } = DateTime.UtcNow;
+
+    public ICollection<DestinacijaEntity> Destinacije { get; set; } = new List<DestinacijaEntity>();
+
+    public ICollection<ActivityEntity> Aktivnosti { get; set; } = new List<ActivityEntity>();
+
+    public ICollection<ExpenseEntity> Troskovi { get; set; } = new List<ExpenseEntity>();
+
+    public ICollection<ChecklistItemEntity> StavkeCheckListe { get; set; } = new List<ChecklistItemEntity>();
+}

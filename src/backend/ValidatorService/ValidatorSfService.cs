@@ -13,48 +13,83 @@ internal sealed class ValidatorSfService : StatelessService, IValidatorService
     {
     }
 
-    public Task<ValidationResultDto> ValidateTripPlanAsync(TripPlanCreateDto request)
+    public Task<RezultatValidacijeDto> ValidirajPlanPutovanjaAsync(PlanPutovanjaUpisDto zahtjev)
     {
-        var errors = new List<string>();
+        var greske = new List<string>();
 
-        if (string.IsNullOrWhiteSpace(request.Title))
+        if (string.IsNullOrWhiteSpace(zahtjev.Naziv))
         {
-            errors.Add("Naziv putovanja je obavezan.");
+            greske.Add("Naziv putovanja je obavezan.");
         }
 
-        if (request.StartDate == default)
+        if (zahtjev.PocetniDatum == default)
         {
-            errors.Add("Pocetni datum je obavezan.");
+            greske.Add("Pocetni datum je obavezan.");
         }
 
-        if (request.EndDate == default)
+        if (zahtjev.KrajnjiDatum == default)
         {
-            errors.Add("Krajnji datum je obavezan.");
+            greske.Add("Krajnji datum je obavezan.");
         }
 
-        if (request.EndDate.Date < request.StartDate.Date)
+        if (zahtjev.KrajnjiDatum.Date < zahtjev.PocetniDatum.Date)
         {
-            errors.Add("Krajnji datum ne moze biti prije pocetnog datuma.");
+            greske.Add("Krajnji datum ne moze biti prije pocetnog datuma.");
         }
 
-        if (request.PlannedBudget < 0)
+        if (zahtjev.PlaniraniBudzet < 0)
         {
-            errors.Add("Budzet ne moze biti negativan.");
+            greske.Add("Budzet ne moze biti negativan.");
         }
 
-        return Task.FromResult(errors.Count == 0
-            ? ValidationResultDto.Success()
-            : ValidationResultDto.Fail(errors));
+        return Task.FromResult(greske.Count == 0
+            ? RezultatValidacijeDto.Uspjesno()
+            : RezultatValidacijeDto.Neuspjesno(greske));
     }
 
-    public Task<ValidationResultDto> ValidateShareAccessAsync(string token, ShareAccessType requiredAccess)
+
+    public Task<RezultatValidacijeDto> ValidirajDestinacijuAsync(DestinacijaUpisDto zahtjev)
+    {
+        var greske = new List<string>();
+
+        if (string.IsNullOrWhiteSpace(zahtjev.Naziv))
+        {
+            greske.Add("Naziv destinacije je obavezan.");
+        }
+
+        if (string.IsNullOrWhiteSpace(zahtjev.Lokacija))
+        {
+            greske.Add("Lokacija destinacije je obavezna.");
+        }
+
+        if (zahtjev.DatumDolaska == default)
+        {
+            greske.Add("Datum dolaska je obavezan.");
+        }
+
+        if (zahtjev.DatumOdlaska == default)
+        {
+            greske.Add("Datum odlaska je obavezan.");
+        }
+
+        if (zahtjev.DatumOdlaska.Date < zahtjev.DatumDolaska.Date)
+        {
+            greske.Add("Datum odlaska ne moze biti prije datuma dolaska.");
+        }
+
+        return Task.FromResult(greske.Count == 0
+            ? RezultatValidacijeDto.Uspjesno()
+            : RezultatValidacijeDto.Neuspjesno(greske));
+    }
+
+    public Task<RezultatValidacijeDto> ValidateShareAccessAsync(string token, ShareAccessType requiredAccess)
     {
         if (string.IsNullOrWhiteSpace(token))
         {
-            return Task.FromResult(ValidationResultDto.Fail(new[] { "Share token je obavezan." }));
+            return Task.FromResult(RezultatValidacijeDto.Neuspjesno(new[] { "Share token je obavezan." }));
         }
 
-        return Task.FromResult(ValidationResultDto.Success());
+        return Task.FromResult(RezultatValidacijeDto.Uspjesno());
     }
 
     protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()

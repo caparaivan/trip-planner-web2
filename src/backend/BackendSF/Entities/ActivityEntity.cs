@@ -4,9 +4,9 @@ public sealed class ActivityEntity
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 
-    public Guid TripPlanId { get; set; }
+    public Guid PlanPutovanjaId { get; set; }
 
-    public TripPlanEntity? TripPlan { get; set; }
+    public PlanPutovanjaEntity? PlanPutovanja { get; set; }
 
     public string Title { get; set; } = string.Empty;
 

@@ -14,5 +14,5 @@ public sealed class UserEntity
 
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
 
-    public ICollection<TripPlanEntity> TripPlans { get; set; } = new List<TripPlanEntity>();
+    public ICollection<PlanPutovanjaEntity> PlanoviPutovanja { get; set; } = new List<PlanPutovanjaEntity>();
 }

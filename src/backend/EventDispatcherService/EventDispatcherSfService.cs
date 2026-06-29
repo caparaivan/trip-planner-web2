@@ -10,18 +10,18 @@ namespace EventDispatcherService;
 
 internal sealed class EventDispatcherSfService : StatefulService, IEventDispatcherService
 {
-    private const string EventsQueueName = "tripPlanEvents";
+    private const string NazivRedaDogadjaja = "dogadjajiPlanovaPutovanja";
 
     public EventDispatcherSfService(StatefulServiceContext context) : base(context)
     {
     }
 
-    public async Task PublishAsync(TripPlanEventDto tripPlanEvent)
+    public async Task ObjaviAsync(DogadjajPlanaPutovanjaDto dogadjajPlanaPutovanja)
     {
-        var queue = await StateManager.GetOrAddAsync<IReliableQueue<TripPlanEventDto>>(EventsQueueName);
+        var red = await StateManager.GetOrAddAsync<IReliableQueue<DogadjajPlanaPutovanjaDto>>(NazivRedaDogadjaja);
 
         using var tx = StateManager.CreateTransaction();
-        await queue.EnqueueAsync(tx, tripPlanEvent);
+        await red.EnqueueAsync(tx, dogadjajPlanaPutovanja);
         await tx.CommitAsync();
     }
 
@@ -32,16 +32,16 @@ internal sealed class EventDispatcherSfService : StatefulService, IEventDispatch
 
     protected override async Task RunAsync(CancellationToken cancellationToken)
     {
-        var queue = await StateManager.GetOrAddAsync<IReliableQueue<TripPlanEventDto>>(EventsQueueName);
+        var red = await StateManager.GetOrAddAsync<IReliableQueue<DogadjajPlanaPutovanjaDto>>(NazivRedaDogadjaja);
 
         while (!cancellationToken.IsCancellationRequested)
         {
             using var tx = StateManager.CreateTransaction();
-            var result = await queue.TryDequeueAsync(tx);
+            var rezultat = await red.TryDequeueAsync(tx);
 
-            if (result.HasValue)
+            if (rezultat.HasValue)
             {
-                await ProcessAsync(result.Value, cancellationToken);
+                await ObradiAsync(rezultat.Value, cancellationToken);
                 await tx.CommitAsync();
                 continue;
             }
@@ -50,7 +50,7 @@ internal sealed class EventDispatcherSfService : StatefulService, IEventDispatch
         }
     }
 
-    private static Task ProcessAsync(TripPlanEventDto tripPlanEvent, CancellationToken cancellationToken)
+    private static Task ObradiAsync(DogadjajPlanaPutovanjaDto dogadjajPlanaPutovanja, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         return Task.CompletedTask;

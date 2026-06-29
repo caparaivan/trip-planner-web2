@@ -5,5 +5,5 @@ namespace TripPlanner.Contracts.Services;
 
 public interface IEventDispatcherService : IService
 {
-    Task PublishAsync(TripPlanEventDto tripPlanEvent);
+    Task ObjaviAsync(DogadjajPlanaPutovanjaDto dogadjajPlanaPutovanja);
 }

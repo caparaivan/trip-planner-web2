@@ -5,7 +5,9 @@ namespace TripPlanner.Contracts.Services;
 
 public interface IValidatorService : IService
 {
-    Task<ValidationResultDto> ValidateTripPlanAsync(TripPlanCreateDto request);
+    Task<RezultatValidacijeDto> ValidirajPlanPutovanjaAsync(PlanPutovanjaUpisDto zahtjev);
 
-    Task<ValidationResultDto> ValidateShareAccessAsync(string token, ShareAccessType requiredAccess);
+    Task<RezultatValidacijeDto> ValidirajDestinacijuAsync(DestinacijaUpisDto zahtjev);
+
+    Task<RezultatValidacijeDto> ValidateShareAccessAsync(string token, ShareAccessType requiredAccess);
 }

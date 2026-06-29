@@ -11,9 +11,9 @@ public sealed class AppDbContext : DbContext
 
     public DbSet<UserEntity> Users => Set<UserEntity>();
 
-    public DbSet<TripPlanEntity> TripPlans => Set<TripPlanEntity>();
+    public DbSet<PlanPutovanjaEntity> PlanoviPutovanja => Set<PlanPutovanjaEntity>();
 
-    public DbSet<DestinationEntity> Destinations => Set<DestinationEntity>();
+    public DbSet<DestinacijaEntity> Destinacije => Set<DestinacijaEntity>();
 
     public DbSet<ActivityEntity> Activities => Set<ActivityEntity>();
 
@@ -25,76 +25,78 @@ public sealed class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<UserEntity>(entity =>
+        modelBuilder.Entity<UserEntity>(korisnik =>
         {
-            entity.HasKey(user => user.Id);
-            entity.Property(user => user.Name).HasMaxLength(120).IsRequired();
-            entity.Property(user => user.Email).HasMaxLength(180).IsRequired();
-            entity.HasIndex(user => user.Email).IsUnique();
-            entity.Property(user => user.PasswordHash).HasMaxLength(500).IsRequired();
-            entity.Property(user => user.Role).HasMaxLength(40).IsRequired();
+            korisnik.HasKey(k => k.Id);
+            korisnik.Property(k => k.Name).HasMaxLength(120).IsRequired();
+            korisnik.Property(k => k.Email).HasMaxLength(180).IsRequired();
+            korisnik.HasIndex(k => k.Email).IsUnique();
+            korisnik.Property(k => k.PasswordHash).HasMaxLength(500).IsRequired();
+            korisnik.Property(k => k.Role).HasMaxLength(40).IsRequired();
         });
 
-        modelBuilder.Entity<TripPlanEntity>(entity =>
+        modelBuilder.Entity<PlanPutovanjaEntity>(planPutovanja =>
         {
-            entity.HasKey(plan => plan.Id);
-            entity.Property(plan => plan.Title).HasMaxLength(160).IsRequired();
-            entity.Property(plan => plan.Description).HasMaxLength(1000);
-            entity.Property(plan => plan.Notes).HasMaxLength(2000);
-            entity.Property(plan => plan.PlannedBudget).HasPrecision(18, 2);
+            planPutovanja.ToTable("PlanoviPutovanja");
+            planPutovanja.HasKey(plan => plan.Id);
+            planPutovanja.Property(plan => plan.Naziv).HasMaxLength(160).IsRequired();
+            planPutovanja.Property(plan => plan.KratakOpis).HasMaxLength(1000);
+            planPutovanja.Property(plan => plan.OpsteNapomene).HasMaxLength(2000);
+            planPutovanja.Property(plan => plan.PlaniraniBudzet).HasPrecision(18, 2);
 
-            entity.HasOne(plan => plan.User)
-                .WithMany(user => user.TripPlans)
+            planPutovanja.HasOne(plan => plan.User)
+                .WithMany(korisnik => korisnik.PlanoviPutovanja)
                 .HasForeignKey(plan => plan.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        modelBuilder.Entity<DestinationEntity>(entity =>
+        modelBuilder.Entity<DestinacijaEntity>(destinacija =>
         {
-            entity.HasKey(destination => destination.Id);
-            entity.Property(destination => destination.Name).HasMaxLength(160).IsRequired();
-            entity.Property(destination => destination.Location).HasMaxLength(200).IsRequired();
-            entity.Property(destination => destination.Description).HasMaxLength(1000);
-            entity.HasOne(destination => destination.TripPlan)
-                .WithMany(plan => plan.Destinations)
-                .HasForeignKey(destination => destination.TripPlanId)
+            destinacija.ToTable("Destinacije");
+            destinacija.HasKey(d => d.Id);
+            destinacija.Property(d => d.Naziv).HasMaxLength(160).IsRequired();
+            destinacija.Property(d => d.Lokacija).HasMaxLength(200).IsRequired();
+            destinacija.Property(d => d.KratakOpis).HasMaxLength(1000);
+            destinacija.HasOne(d => d.PlanPutovanja)
+                .WithMany(plan => plan.Destinacije)
+                .HasForeignKey(d => d.PlanPutovanjaId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        modelBuilder.Entity<ActivityEntity>(entity =>
+        modelBuilder.Entity<ActivityEntity>(aktivnost =>
         {
-            entity.HasKey(activity => activity.Id);
-            entity.Property(activity => activity.Title).HasMaxLength(160).IsRequired();
-            entity.Property(activity => activity.Location).HasMaxLength(200);
-            entity.Property(activity => activity.Description).HasMaxLength(1000);
-            entity.Property(activity => activity.Status).HasMaxLength(40).IsRequired();
-            entity.Property(activity => activity.EstimatedCost).HasPrecision(18, 2);
-            entity.HasOne(activity => activity.TripPlan)
-                .WithMany(plan => plan.Activities)
-                .HasForeignKey(activity => activity.TripPlanId)
+            aktivnost.HasKey(a => a.Id);
+            aktivnost.Property(a => a.Title).HasMaxLength(160).IsRequired();
+            aktivnost.Property(a => a.Location).HasMaxLength(200);
+            aktivnost.Property(a => a.Description).HasMaxLength(1000);
+            aktivnost.Property(a => a.Status).HasMaxLength(40).IsRequired();
+            aktivnost.Property(a => a.EstimatedCost).HasPrecision(18, 2);
+            aktivnost.HasOne(a => a.PlanPutovanja)
+                .WithMany(plan => plan.Aktivnosti)
+                .HasForeignKey(a => a.PlanPutovanjaId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        modelBuilder.Entity<ExpenseEntity>(entity =>
+        modelBuilder.Entity<ExpenseEntity>(trosak =>
         {
-            entity.HasKey(expense => expense.Id);
-            entity.Property(expense => expense.Title).HasMaxLength(160).IsRequired();
-            entity.Property(expense => expense.Category).HasMaxLength(80).IsRequired();
-            entity.Property(expense => expense.Amount).HasPrecision(18, 2);
-            entity.Property(expense => expense.Description).HasMaxLength(1000);
-            entity.HasOne(expense => expense.TripPlan)
-                .WithMany(plan => plan.Expenses)
-                .HasForeignKey(expense => expense.TripPlanId)
+            trosak.HasKey(t => t.Id);
+            trosak.Property(t => t.Title).HasMaxLength(160).IsRequired();
+            trosak.Property(t => t.Category).HasMaxLength(80).IsRequired();
+            trosak.Property(t => t.Amount).HasPrecision(18, 2);
+            trosak.Property(t => t.Description).HasMaxLength(1000);
+            trosak.HasOne(t => t.PlanPutovanja)
+                .WithMany(plan => plan.Troskovi)
+                .HasForeignKey(t => t.PlanPutovanjaId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        modelBuilder.Entity<ChecklistItemEntity>(entity =>
+        modelBuilder.Entity<ChecklistItemEntity>(stavka =>
         {
-            entity.HasKey(item => item.Id);
-            entity.Property(item => item.Title).HasMaxLength(160).IsRequired();
-            entity.HasOne(item => item.TripPlan)
-                .WithMany(plan => plan.ChecklistItems)
-                .HasForeignKey(item => item.TripPlanId)
+            stavka.HasKey(s => s.Id);
+            stavka.Property(s => s.Title).HasMaxLength(160).IsRequired();
+            stavka.HasOne(s => s.PlanPutovanja)
+                .WithMany(plan => plan.StavkeCheckListe)
+                .HasForeignKey(s => s.PlanPutovanjaId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }
