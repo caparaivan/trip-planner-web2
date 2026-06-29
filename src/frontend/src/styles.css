@@ -19,7 +19,7 @@ textarea {
   font: inherit;
 }
 
-.app-header {
+.zaglavlje-aplikacije {
   align-items: center;
   background: #ffffff;
   border-bottom: 1px solid #d9e1ec;
@@ -28,12 +28,12 @@ textarea {
   padding: 20px clamp(16px, 5vw, 56px);
 }
 
-.app-header h1,
-.section-heading h2 {
+.zaglavlje-aplikacije h1,
+.naslov-sekcije h2 {
   margin: 0;
 }
 
-.eyebrow {
+.oznaka {
   color: #4f6f52;
   font-size: 0.78rem;
   font-weight: 700;
@@ -42,7 +42,7 @@ textarea {
   text-transform: uppercase;
 }
 
-.header-badge {
+.bedz-zaglavlja {
   border: 1px solid #c7d7ca;
   border-radius: 6px;
   color: #2d5a35;
@@ -50,7 +50,7 @@ textarea {
   padding: 6px 10px;
 }
 
-.page-shell {
+.okvir-stranice {
   display: grid;
   gap: 24px;
   margin: 0 auto;
@@ -58,23 +58,29 @@ textarea {
   padding: 28px 16px 48px;
 }
 
-.content-section {
+.sekcija-sadrzaja {
   background: #ffffff;
   border: 1px solid #d9e1ec;
   border-radius: 8px;
   padding: 20px;
 }
 
-.section-heading {
+.naslov-sekcije {
   margin-bottom: 18px;
 }
 
-.trip-form {
+.forma-plana {
   display: grid;
   gap: 16px;
 }
 
-.form-grid {
+.mreza-destinacija {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.85fr);
+}
+
+.mreza-forme {
   display: grid;
   gap: 16px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -116,86 +122,149 @@ button:disabled {
   cursor: not-allowed;
 }
 
-.message {
+.dugme-sporedno {
+  background: #e8eef5;
+  color: #254261;
+}
+
+.dugme-opasno {
+  background: #b53a3a;
+}
+
+.akcije-forme,
+.akcije-plana {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.poruka {
   border-radius: 6px;
   margin: 0 0 14px;
   padding: 10px 12px;
 }
 
-.message.error {
+.poruka.greska {
   background: #fdeaea;
   color: #8a1f1f;
 }
 
-.message.info {
+.poruka.info {
   background: #e8f1fb;
   color: #234f7a;
 }
 
-.message.success {
+.poruka.uspjeh {
   background: #e7f5ec;
   color: #22643a;
 }
 
-.trip-list {
+.lista-planova,
+.lista-destinacija {
   display: grid;
   gap: 12px;
 }
 
-.trip-item {
+.stavka-plana,
+.stavka-destinacije {
   border: 1px solid #d9e1ec;
   border-radius: 8px;
   display: grid;
   gap: 16px;
-  grid-template-columns: 1fr auto;
   padding: 16px;
 }
 
-.trip-item h3,
-.trip-item p {
+.stavka-plana {
+  grid-template-columns: 1fr auto auto;
+}
+
+.stavka-destinacije {
+  grid-template-columns: 1fr;
+}
+
+.stavka-plana.aktivna {
+  border-color: #285a84;
+  box-shadow: 0 0 0 2px rgba(40, 90, 132, 0.12);
+}
+
+.stavka-plana h3,
+.stavka-plana p,
+.stavka-destinacije h3,
+.stavka-destinacije p,
+.detalji-plana h3 {
   margin: 0;
 }
 
-.trip-item p {
+.stavka-plana p,
+.stavka-destinacije p {
   color: #5d6b7d;
 }
 
-.trip-item dl {
+.stavka-plana dl,
+.stavka-destinacije dl,
+.detalji-plana dl {
   display: grid;
   gap: 10px;
-  grid-template-columns: repeat(3, max-content);
   margin: 0;
 }
 
-.trip-item dt {
+.stavka-plana dl {
+  grid-template-columns: repeat(3, max-content);
+}
+
+.stavka-destinacije dl {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.detalji-plana dl {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.stavka-plana dt,
+.stavka-destinacije dt,
+.detalji-plana dt {
   color: #69788a;
   font-size: 0.8rem;
   font-weight: 700;
 }
 
-.trip-item dd {
+.stavka-plana dd,
+.stavka-destinacije dd,
+.detalji-plana dd {
   margin: 0;
 }
 
-.empty-state {
+.detalji-plana {
+  display: grid;
+  gap: 14px;
+}
+
+.siroko-polje {
+  grid-column: 1 / -1;
+}
+
+.prazno-stanje {
   color: #5d6b7d;
   margin: 0;
 }
 
-@media (max-width: 760px) {
-  .app-header,
-  .trip-item {
+@media (max-width: 860px) {
+  .zaglavlje-aplikacije,
+  .stavka-plana,
+  .mreza-destinacija {
     align-items: start;
     grid-template-columns: 1fr;
   }
 
-  .app-header {
+  .zaglavlje-aplikacije {
     display: grid;
     gap: 12px;
   }
 
-  .form-grid,
-  .trip-item dl {
+  .mreza-forme,
+  .stavka-plana dl,
+  .stavka-destinacije dl,
+  .detalji-plana dl {
     grid-template-columns: 1fr;
   }
 }
