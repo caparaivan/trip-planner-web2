@@ -4,6 +4,7 @@ using BackendSF.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BackendSF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260629090618_PlanPutovanjaCrud")]
+    partial class PlanPutovanjaCrud
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -90,28 +93,28 @@ namespace BackendSF.Migrations
                     b.ToTable("ChecklistItems");
                 });
 
-            modelBuilder.Entity("BackendSF.Entities.DestinacijaEntity", b =>
+            modelBuilder.Entity("BackendSF.Entities.DestinationEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("DatumDolaska")
+                    b.Property<DateTime>("ArrivalDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DatumOdlaska")
+                    b.Property<DateTime>("DepartureDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("KratakOpis")
+                    b.Property<string>("Description")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<string>("Lokacija")
+                    b.Property<string>("Location")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<string>("Naziv")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(160)
                         .HasColumnType("nvarchar(160)");
@@ -123,7 +126,7 @@ namespace BackendSF.Migrations
 
                     b.HasIndex("PlanPutovanjaId");
 
-                    b.ToTable("Destinacije", (string)null);
+                    b.ToTable("Destinations");
                 });
 
             modelBuilder.Entity("BackendSF.Entities.ExpenseEntity", b =>
@@ -266,7 +269,7 @@ namespace BackendSF.Migrations
                     b.Navigation("PlanPutovanja");
                 });
 
-            modelBuilder.Entity("BackendSF.Entities.DestinacijaEntity", b =>
+            modelBuilder.Entity("BackendSF.Entities.DestinationEntity", b =>
                 {
                     b.HasOne("BackendSF.Entities.PlanPutovanjaEntity", "PlanPutovanja")
                         .WithMany("Destinacije")
