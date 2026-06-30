@@ -7,6 +7,8 @@ const pocetnoStanje = {
   odabraniPlan: null,
   destinacije: [],
   aktivnosti: [],
+  troskovi: [],
+  pregledBudzeta: null,
   ucitavanje: false,
   greska: '',
   porukaUspjeha: ''
@@ -24,6 +26,18 @@ function appReducer(stanje, akcija) {
       return { ...stanje, ucitavanje: false, destinacije: akcija.payload };
     case 'aktivnostiUcitane':
       return { ...stanje, ucitavanje: false, aktivnosti: sortirajAktivnosti(akcija.payload) };
+    case 'troskoviUcitani':
+      return { ...stanje, ucitavanje: false, troskovi: sortirajTroskove(akcija.payload) };
+    case 'pregledBudzetaUcitan':
+      return {
+        ...stanje,
+        ucitavanje: false,
+        pregledBudzeta: akcija.payload,
+        odabraniPlan: primijeniPregledBudzeta(stanje.odabraniPlan, akcija.payload),
+        planoviPutovanja: stanje.planoviPutovanja.map((plan) =>
+          plan.id === akcija.payload.planPutovanjaId ? primijeniPregledBudzeta(plan, akcija.payload) : plan
+        )
+      };
     case 'planKreiran':
       return {
         ...stanje,
@@ -32,6 +46,8 @@ function appReducer(stanje, akcija) {
         odabraniPlan: akcija.payload,
         destinacije: [],
         aktivnosti: [],
+        troskovi: [],
+        pregledBudzeta: null,
         porukaUspjeha: 'Plan putovanja je sacuvan.'
       };
     case 'planIzmijenjen':
@@ -42,6 +58,7 @@ function appReducer(stanje, akcija) {
           plan.id === akcija.payload.id ? akcija.payload : plan
         ),
         odabraniPlan: akcija.payload,
+        pregledBudzeta: uskladiPregledSaPlanom(stanje.pregledBudzeta, akcija.payload),
         porukaUspjeha: 'Plan putovanja je izmijenjen.'
       };
     case 'planObrisan':
@@ -52,6 +69,8 @@ function appReducer(stanje, akcija) {
         odabraniPlan: stanje.odabraniPlan?.id === akcija.payload ? null : stanje.odabraniPlan,
         destinacije: stanje.odabraniPlan?.id === akcija.payload ? [] : stanje.destinacije,
         aktivnosti: stanje.odabraniPlan?.id === akcija.payload ? [] : stanje.aktivnosti,
+        troskovi: stanje.odabraniPlan?.id === akcija.payload ? [] : stanje.troskovi,
+        pregledBudzeta: stanje.odabraniPlan?.id === akcija.payload ? null : stanje.pregledBudzeta,
         porukaUspjeha: 'Plan putovanja je obrisan.'
       };
     case 'destinacijaKreirana':
@@ -102,8 +121,31 @@ function appReducer(stanje, akcija) {
         aktivnosti: stanje.aktivnosti.filter((aktivnost) => aktivnost.id !== akcija.payload),
         porukaUspjeha: 'Aktivnost je obrisana.'
       };
+    case 'trosakKreiran':
+      return {
+        ...stanje,
+        ucitavanje: false,
+        troskovi: sortirajTroskove([...stanje.troskovi, akcija.payload]),
+        porukaUspjeha: 'Trosak je sacuvan.'
+      };
+    case 'trosakIzmijenjen':
+      return {
+        ...stanje,
+        ucitavanje: false,
+        troskovi: sortirajTroskove(
+          stanje.troskovi.map((trosak) => (trosak.id === akcija.payload.id ? akcija.payload : trosak))
+        ),
+        porukaUspjeha: 'Trosak je izmijenjen.'
+      };
+    case 'trosakObrisan':
+      return {
+        ...stanje,
+        ucitavanje: false,
+        troskovi: stanje.troskovi.filter((trosak) => trosak.id !== akcija.payload),
+        porukaUspjeha: 'Trosak je obrisan.'
+      };
     case 'odabirPonisten':
-      return { ...stanje, odabraniPlan: null, destinacije: [], aktivnosti: [] };
+      return { ...stanje, odabraniPlan: null, destinacije: [], aktivnosti: [], troskovi: [], pregledBudzeta: null };
     case 'zahtjevNeuspjesan':
       return { ...stanje, ucitavanje: false, greska: akcija.payload };
     case 'porukeOciscene':
@@ -119,6 +161,39 @@ function sortirajAktivnosti(aktivnosti) {
     const drugiDatum = `${druga.datum || ''} ${druga.vrijeme || '99:99:99'}`;
     return prviDatum.localeCompare(drugiDatum);
   });
+}
+
+function sortirajTroskove(troskovi) {
+  return [...troskovi].sort((prvi, drugi) => {
+    const datum = (drugi.datum || '').localeCompare(prvi.datum || '');
+    return datum !== 0 ? datum : prvi.naziv.localeCompare(drugi.naziv);
+  });
+}
+
+function primijeniPregledBudzeta(plan, pregledBudzeta) {
+  if (!plan || plan.id !== pregledBudzeta.planPutovanjaId) {
+    return plan;
+  }
+
+  return {
+    ...plan,
+    planiraniBudzet: pregledBudzeta.planiraniBudzet,
+    ukupanTrosak: pregledBudzeta.ukupanTrosak,
+    preostaliBudzet: pregledBudzeta.preostaliBudzet
+  };
+}
+
+function uskladiPregledSaPlanom(pregledBudzeta, plan) {
+  if (!pregledBudzeta || pregledBudzeta.planPutovanjaId !== plan.id) {
+    return pregledBudzeta;
+  }
+
+  return {
+    ...pregledBudzeta,
+    planiraniBudzet: plan.planiraniBudzet,
+    ukupanTrosak: plan.ukupanTrosak,
+    preostaliBudzet: plan.preostaliBudzet
+  };
 }
 
 export function AppProvider({ children }) {

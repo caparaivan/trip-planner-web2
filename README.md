@@ -45,6 +45,43 @@ Backend solution je u `src/backend/TripPlanner.sln`. Service Fabric application 
 
 Connection string je u `src/backend/BackendSF/appsettings.json`.
 
+## Trenutno implementirano
+
+Tacka 3.1 je pokrivena kroz CRUD za planove putovanja:
+
+- `GET /api/planovi-putovanja`
+- `GET /api/planovi-putovanja/{id}`
+- `POST /api/planovi-putovanja`
+- `PUT /api/planovi-putovanja/{id}`
+- `DELETE /api/planovi-putovanja/{id}`
+
+Tacka 3.2 je pokrivena kroz CRUD za destinacije u okviru izabranog plana putovanja:
+
+- `GET /api/planovi-putovanja/{planPutovanjaId}/destinacije`
+- `GET /api/planovi-putovanja/{planPutovanjaId}/destinacije/{id}`
+- `POST /api/planovi-putovanja/{planPutovanjaId}/destinacije`
+- `PUT /api/planovi-putovanja/{planPutovanjaId}/destinacije/{id}`
+- `DELETE /api/planovi-putovanja/{planPutovanjaId}/destinacije/{id}`
+
+Tacka 3.3 je pokrivena kroz CRUD za aktivnosti i kalendarski prikaz aktivnosti po danima:
+
+- `GET /api/planovi-putovanja/{planPutovanjaId}/aktivnosti`
+- `GET /api/planovi-putovanja/{planPutovanjaId}/aktivnosti/{id}`
+- `POST /api/planovi-putovanja/{planPutovanjaId}/aktivnosti`
+- `PUT /api/planovi-putovanja/{planPutovanjaId}/aktivnosti/{id}`
+- `DELETE /api/planovi-putovanja/{planPutovanjaId}/aktivnosti/{id}`
+
+Tacka 3.4 je pokrivena kroz CRUD za troskove i automatski pregled budzeta:
+
+- `GET /api/planovi-putovanja/{planPutovanjaId}/troskovi`
+- `GET /api/planovi-putovanja/{planPutovanjaId}/troskovi/pregled-budzeta`
+- `GET /api/planovi-putovanja/{planPutovanjaId}/troskovi/{id}`
+- `POST /api/planovi-putovanja/{planPutovanjaId}/troskovi`
+- `PUT /api/planovi-putovanja/{planPutovanjaId}/troskovi/{id}`
+- `DELETE /api/planovi-putovanja/{planPutovanjaId}/troskovi/{id}`
+
+Frontend ima formu za kreiranje i izmjenu plana, listu planova, prikaz detalja, brisanje plana, formu, listu, izmjenu i brisanje destinacija, formu, listu i kalendar aktivnosti, kao i evidenciju troskova sa pregledom planiranog budzeta, ukupnih troskova, preostalog budzeta i troskova po kategorijama za odabrani plan.
+
 ## Migracije
 
 Migracije se dodaju u `BackendSF`, jer taj projekat sadrzi `AppDbContext`:

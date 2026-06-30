@@ -7,6 +7,9 @@ import ListaDestinacija from '../components/destinacije/ListaDestinacija.jsx';
 import DetaljiPlanaPutovanja from '../components/planovi/DetaljiPlanaPutovanja.jsx';
 import FormaPlanaPutovanja from '../components/planovi/FormaPlanaPutovanja.jsx';
 import ListaPlanovaPutovanja from '../components/planovi/ListaPlanovaPutovanja.jsx';
+import FormaTroska from '../components/troskovi/FormaTroska.jsx';
+import ListaTroskova from '../components/troskovi/ListaTroskova.jsx';
+import PregledBudzeta from '../components/troskovi/PregledBudzeta.jsx';
 import { useAppContext } from '../context/AppContext.jsx';
 import {
   kreirajAktivnost,
@@ -27,6 +30,13 @@ import {
   vratiPlanPutovanja,
   vratiPlanovePutovanja
 } from '../services/planPutovanjaService.js';
+import {
+  kreirajTrosak,
+  obrisiTrosak,
+  izmijeniTrosak,
+  vratiPregledBudzeta,
+  vratiTroskove
+} from '../services/trosakService.js';
 
 export default function PlanoviPutovanjaPage() {
   const { stanje, dispatch } = useAppContext();
@@ -36,6 +46,8 @@ export default function PlanoviPutovanjaPage() {
   const [destinacijaZaIzmjenu, setDestinacijaZaIzmjenu] = useState(null);
   const [modFormeAktivnosti, setModFormeAktivnosti] = useState('kreiranje');
   const [aktivnostZaIzmjenu, setAktivnostZaIzmjenu] = useState(null);
+  const [modFormeTroska, setModFormeTroska] = useState('kreiranje');
+  const [trosakZaIzmjenu, setTrosakZaIzmjenu] = useState(null);
 
   useEffect(() => {
     let aktivno = true;
@@ -78,6 +90,8 @@ export default function PlanoviPutovanjaPage() {
       setDestinacijaZaIzmjenu(null);
       setModFormeAktivnosti('kreiranje');
       setAktivnostZaIzmjenu(null);
+      setModFormeTroska('kreiranje');
+      setTrosakZaIzmjenu(null);
     } catch (error) {
       dispatch({ type: 'zahtjevNeuspjesan', payload: error.message });
     }
@@ -86,18 +100,24 @@ export default function PlanoviPutovanjaPage() {
   const handleDetalji = async (id) => {
     dispatch({ type: 'zahtjevPokrenut' });
     try {
-      const [planPutovanja, destinacije, aktivnosti] = await Promise.all([
+      const [planPutovanja, destinacije, aktivnosti, troskovi, pregledBudzeta] = await Promise.all([
         vratiPlanPutovanja(id),
         vratiDestinacije(id),
-        vratiAktivnosti(id)
+        vratiAktivnosti(id),
+        vratiTroskove(id),
+        vratiPregledBudzeta(id)
       ]);
       dispatch({ type: 'detaljiPlanaUcitani', payload: planPutovanja });
       dispatch({ type: 'destinacijeUcitane', payload: destinacije || [] });
       dispatch({ type: 'aktivnostiUcitane', payload: aktivnosti || [] });
+      dispatch({ type: 'troskoviUcitani', payload: troskovi || [] });
+      dispatch({ type: 'pregledBudzetaUcitan', payload: pregledBudzeta });
       setModFormeDestinacije('kreiranje');
       setDestinacijaZaIzmjenu(null);
       setModFormeAktivnosti('kreiranje');
       setAktivnostZaIzmjenu(null);
+      setModFormeTroska('kreiranje');
+      setTrosakZaIzmjenu(null);
     } catch (error) {
       dispatch({ type: 'zahtjevNeuspjesan', payload: error.message });
     }
@@ -105,16 +125,26 @@ export default function PlanoviPutovanjaPage() {
 
   const handleIzmjena = async (plan) => {
     try {
-      const [planPutovanja, destinacije, aktivnosti] = await Promise.all([
+      const [planPutovanja, destinacije, aktivnosti, troskovi, pregledBudzeta] = await Promise.all([
         vratiPlanPutovanja(plan.id),
         vratiDestinacije(plan.id),
-        vratiAktivnosti(plan.id)
+        vratiAktivnosti(plan.id),
+        vratiTroskove(plan.id),
+        vratiPregledBudzeta(plan.id)
       ]);
       setPlanZaIzmjenu(planPutovanja);
       setModForme('izmjena');
       dispatch({ type: 'detaljiPlanaUcitani', payload: planPutovanja });
       dispatch({ type: 'destinacijeUcitane', payload: destinacije || [] });
       dispatch({ type: 'aktivnostiUcitane', payload: aktivnosti || [] });
+      dispatch({ type: 'troskoviUcitani', payload: troskovi || [] });
+      dispatch({ type: 'pregledBudzetaUcitan', payload: pregledBudzeta });
+      setModFormeDestinacije('kreiranje');
+      setDestinacijaZaIzmjenu(null);
+      setModFormeAktivnosti('kreiranje');
+      setAktivnostZaIzmjenu(null);
+      setModFormeTroska('kreiranje');
+      setTrosakZaIzmjenu(null);
     } catch (error) {
       dispatch({ type: 'zahtjevNeuspjesan', payload: error.message });
     }
@@ -138,6 +168,8 @@ export default function PlanoviPutovanjaPage() {
       setModFormeDestinacije('kreiranje');
       setAktivnostZaIzmjenu(null);
       setModFormeAktivnosti('kreiranje');
+      setTrosakZaIzmjenu(null);
+      setModFormeTroska('kreiranje');
     } catch (error) {
       dispatch({ type: 'zahtjevNeuspjesan', payload: error.message });
     }
@@ -266,6 +298,73 @@ export default function PlanoviPutovanjaPage() {
     setModFormeAktivnosti('kreiranje');
   };
 
+  const osvjeziPregledBudzeta = async (planPutovanjaId) => {
+    const pregledBudzeta = await vratiPregledBudzeta(planPutovanjaId);
+    dispatch({ type: 'pregledBudzetaUcitan', payload: pregledBudzeta });
+  };
+
+  const handleSacuvajTrosak = async (podaciForme) => {
+    if (!stanje.odabraniPlan) {
+      return;
+    }
+
+    dispatch({ type: 'zahtjevPokrenut' });
+    try {
+      if (modFormeTroska === 'izmjena' && trosakZaIzmjenu) {
+        const izmijenjeniTrosak = await izmijeniTrosak(
+          stanje.odabraniPlan.id,
+          trosakZaIzmjenu.id,
+          podaciForme
+        );
+        dispatch({ type: 'trosakIzmijenjen', payload: izmijenjeniTrosak });
+        await osvjeziPregledBudzeta(stanje.odabraniPlan.id);
+        setTrosakZaIzmjenu(null);
+        setModFormeTroska('kreiranje');
+        return;
+      }
+
+      const kreiraniTrosak = await kreirajTrosak(stanje.odabraniPlan.id, podaciForme);
+      dispatch({ type: 'trosakKreiran', payload: kreiraniTrosak });
+      await osvjeziPregledBudzeta(stanje.odabraniPlan.id);
+    } catch (error) {
+      dispatch({ type: 'zahtjevNeuspjesan', payload: error.message });
+    }
+  };
+
+  const handleIzmjenaTroska = (trosak) => {
+    setTrosakZaIzmjenu(trosak);
+    setModFormeTroska('izmjena');
+  };
+
+  const handleBrisanjeTroska = async (id) => {
+    if (!stanje.odabraniPlan) {
+      return;
+    }
+
+    const potvrdjeno = window.confirm('Da li ste sigurni da zelite obrisati trosak?');
+    if (!potvrdjeno) {
+      return;
+    }
+
+    dispatch({ type: 'zahtjevPokrenut' });
+    try {
+      await obrisiTrosak(stanje.odabraniPlan.id, id);
+      dispatch({ type: 'trosakObrisan', payload: id });
+      await osvjeziPregledBudzeta(stanje.odabraniPlan.id);
+      if (trosakZaIzmjenu?.id === id) {
+        setTrosakZaIzmjenu(null);
+        setModFormeTroska('kreiranje');
+      }
+    } catch (error) {
+      dispatch({ type: 'zahtjevNeuspjesan', payload: error.message });
+    }
+  };
+
+  const handleOdustaniTrosak = () => {
+    setTrosakZaIzmjenu(null);
+    setModFormeTroska('kreiranje');
+  };
+
   return (
     <main className="okvir-stranice">
       <section className="sekcija-sadrzaja">
@@ -331,6 +430,41 @@ export default function PlanoviPutovanjaPage() {
               onIzmjena={handleIzmjenaDestinacije}
               onBrisanje={handleBrisanjeDestinacije}
             />
+          </div>
+        )}
+      </section>
+
+      <section className="sekcija-sadrzaja">
+        <div className="naslov-sekcije">
+          <p className="oznaka">Troskovi</p>
+          <h2>{modFormeTroska === 'izmjena' ? 'Izmjena troska' : 'Novi trosak'}</h2>
+        </div>
+
+        {!stanje.odabraniPlan && <p className="prazno-stanje">Prvo izaberite plan putovanja.</p>}
+
+        {stanje.odabraniPlan && (
+          <div className="mreza-troskova">
+            <div className="panel-troskova">
+              <FormaTroska
+                mod={modFormeTroska}
+                trosakZaIzmjenu={trosakZaIzmjenu}
+                disabled={stanje.ucitavanje}
+                onSubmit={handleSacuvajTrosak}
+                onCancel={handleOdustaniTrosak}
+              />
+            </div>
+
+            <div className="panel-troskova">
+              <PregledBudzeta pregledBudzeta={stanje.pregledBudzeta} />
+            </div>
+
+            <div className="panel-troskova panel-troskova-sirok">
+              <ListaTroskova
+                troskovi={stanje.troskovi}
+                onIzmjena={handleIzmjenaTroska}
+                onBrisanje={handleBrisanjeTroska}
+              />
+            </div>
           </div>
         )}
       </section>

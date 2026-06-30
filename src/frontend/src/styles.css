@@ -87,11 +87,22 @@ textarea {
   grid-template-columns: minmax(0, 0.9fr) minmax(420px, 1.1fr);
 }
 
+.mreza-troskova {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: minmax(0, 0.9fr) minmax(360px, 1.1fr);
+}
+
 .panel-aktivnosti {
   min-width: 0;
 }
 
-.panel-aktivnosti-sirok {
+.panel-troskova {
+  min-width: 0;
+}
+
+.panel-aktivnosti-sirok,
+.panel-troskova-sirok {
   grid-column: 1 / -1;
 }
 
@@ -177,14 +188,16 @@ button:disabled {
 
 .lista-planova,
 .lista-destinacija,
-.lista-aktivnosti {
+.lista-aktivnosti,
+.lista-troskova {
   display: grid;
   gap: 12px;
 }
 
 .stavka-plana,
 .stavka-destinacije,
-.stavka-aktivnosti {
+.stavka-aktivnosti,
+.stavka-troska {
   border: 1px solid #d9e1ec;
   border-radius: 8px;
   display: grid;
@@ -197,7 +210,8 @@ button:disabled {
 }
 
 .stavka-destinacije,
-.stavka-aktivnosti {
+.stavka-aktivnosti,
+.stavka-troska {
   grid-template-columns: 1fr;
 }
 
@@ -212,21 +226,26 @@ button:disabled {
 .stavka-destinacije p,
 .stavka-aktivnosti h4,
 .stavka-aktivnosti p,
+.stavka-troska h3,
+.stavka-troska p,
 .grupa-aktivnosti h3,
 .kalendar-aktivnosti h3,
+.pregled-kategorija h3,
 .detalji-plana h3 {
   margin: 0;
 }
 
 .stavka-plana p,
 .stavka-destinacije p,
-.stavka-aktivnosti p {
+.stavka-aktivnosti p,
+.stavka-troska p {
   color: #5d6b7d;
 }
 
 .stavka-plana dl,
 .stavka-destinacije dl,
 .stavka-aktivnosti dl,
+.stavka-troska dl,
 .detalji-plana dl {
   display: grid;
   gap: 10px;
@@ -245,6 +264,10 @@ button:disabled {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.stavka-troska dl {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .detalji-plana dl {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -252,6 +275,7 @@ button:disabled {
 .stavka-plana dt,
 .stavka-destinacije dt,
 .stavka-aktivnosti dt,
+.stavka-troska dt,
 .detalji-plana dt {
   color: #69788a;
   font-size: 0.8rem;
@@ -261,6 +285,7 @@ button:disabled {
 .stavka-plana dd,
 .stavka-destinacije dd,
 .stavka-aktivnosti dd,
+.stavka-troska dd,
 .detalji-plana dd {
   margin: 0;
 }
@@ -416,11 +441,89 @@ button:disabled {
   font-weight: 700;
 }
 
+.oznaka-kategorije {
+  background: #eef3e7;
+  border-radius: 999px;
+  color: #3f6331;
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 9px;
+}
+
+.pregled-budzeta {
+  display: grid;
+  gap: 16px;
+}
+
+.mreza-budzeta {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.stavka-budzeta {
+  border: 1px solid #d9e1ec;
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+}
+
+.stavka-budzeta span {
+  color: #69788a;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.stavka-budzeta strong {
+  color: #172033;
+  font-size: 1.15rem;
+}
+
+.negativan-budzet {
+  color: #b53a3a;
+}
+
+.traka-budzeta {
+  background: #e8eef5;
+  border-radius: 999px;
+  height: 12px;
+  overflow: hidden;
+}
+
+.traka-budzeta span {
+  background: #285a84;
+  display: block;
+  height: 100%;
+}
+
+.pregled-kategorija {
+  display: grid;
+  gap: 10px;
+}
+
+.stavka-kategorije {
+  align-items: center;
+  border-bottom: 1px solid #e8eef5;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+.stavka-kategorije span {
+  color: #25314a;
+  font-weight: 700;
+}
+
 @media (max-width: 860px) {
   .zaglavlje-aplikacije,
   .stavka-plana,
   .mreza-destinacija,
   .mreza-aktivnosti,
+  .mreza-troskova,
+  .mreza-budzeta,
   .zaglavlje-kalendara {
     align-items: start;
     grid-template-columns: 1fr;
@@ -435,6 +538,7 @@ button:disabled {
   .stavka-plana dl,
   .stavka-destinacije dl,
   .stavka-aktivnosti dl,
+  .stavka-troska dl,
   .detalji-plana dl {
     grid-template-columns: 1fr;
   }
