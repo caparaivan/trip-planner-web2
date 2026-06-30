@@ -295,6 +295,124 @@ button:disabled {
   gap: 14px;
 }
 
+.pregled-plana {
+  display: grid;
+  gap: 20px;
+}
+
+.zaglavlje-pregleda-plana {
+  align-items: start;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr auto;
+}
+
+.zaglavlje-pregleda-plana h3,
+.zaglavlje-pregleda-plana p,
+.blok-pregleda h4,
+.blok-pregleda p {
+  margin: 0;
+}
+
+.zaglavlje-pregleda-plana p,
+.napomena-pregleda {
+  color: #5d6b7d;
+}
+
+.period-pregleda {
+  border-left: 3px solid #4f6f52;
+  color: #25314a;
+  font-weight: 700;
+  padding-left: 12px;
+  white-space: nowrap;
+}
+
+.navigacija-pregleda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.navigacija-pregleda a {
+  color: #285a84;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.mreza-pregleda-plana {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.blok-pregleda {
+  border-top: 1px solid #d9e1ec;
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  padding-top: 14px;
+}
+
+.blok-pregleda-sirok {
+  grid-column: 1 / -1;
+}
+
+.blok-pregleda h4 {
+  color: #25314a;
+  font-size: 1rem;
+}
+
+.blok-pregleda dl {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+}
+
+.blok-pregleda dt {
+  color: #69788a;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.blok-pregleda dd {
+  font-weight: 700;
+  margin: 0;
+}
+
+.sazeta-lista,
+.dani-pregleda {
+  display: grid;
+  gap: 10px;
+}
+
+.stavka-sazetka,
+.dan-pregleda {
+  border-bottom: 1px solid #e8eef5;
+  display: grid;
+  gap: 4px;
+  padding-bottom: 8px;
+}
+
+.stavka-sazetka span,
+.aktivnost-pregleda {
+  color: #5d6b7d;
+}
+
+.red-sazetka {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.aktivnost-pregleda {
+  display: block;
+  font-size: 0.92rem;
+}
+
 .siroko-polje {
   grid-column: 1 / -1;
 }
@@ -524,6 +642,8 @@ button:disabled {
   .mreza-aktivnosti,
   .mreza-troskova,
   .mreza-budzeta,
+  .mreza-pregleda-plana,
+  .zaglavlje-pregleda-plana,
   .zaglavlje-kalendara {
     align-items: start;
     grid-template-columns: 1fr;
@@ -539,8 +659,13 @@ button:disabled {
   .stavka-destinacije dl,
   .stavka-aktivnosti dl,
   .stavka-troska dl,
+  .blok-pregleda dl,
   .detalji-plana dl {
     grid-template-columns: 1fr;
+  }
+
+  .period-pregleda {
+    white-space: normal;
   }
 
   .kalendar-mreza {

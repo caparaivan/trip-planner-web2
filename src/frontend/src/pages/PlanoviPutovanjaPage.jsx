@@ -4,9 +4,9 @@ import KalendarAktivnosti from '../components/aktivnosti/KalendarAktivnosti.jsx'
 import ListaAktivnosti from '../components/aktivnosti/ListaAktivnosti.jsx';
 import FormaDestinacije from '../components/destinacije/FormaDestinacije.jsx';
 import ListaDestinacija from '../components/destinacije/ListaDestinacija.jsx';
-import DetaljiPlanaPutovanja from '../components/planovi/DetaljiPlanaPutovanja.jsx';
 import FormaPlanaPutovanja from '../components/planovi/FormaPlanaPutovanja.jsx';
 import ListaPlanovaPutovanja from '../components/planovi/ListaPlanovaPutovanja.jsx';
+import PregledPlanaPutovanja from '../components/planovi/PregledPlanaPutovanja.jsx';
 import FormaTroska from '../components/troskovi/FormaTroska.jsx';
 import ListaTroskova from '../components/troskovi/ListaTroskova.jsx';
 import PregledBudzeta from '../components/troskovi/PregledBudzeta.jsx';
@@ -400,15 +400,21 @@ export default function PlanoviPutovanjaPage() {
         />
       </section>
 
-      <section className="sekcija-sadrzaja">
+      <section className="sekcija-sadrzaja" id="sekcija-pregled-plana">
         <div className="naslov-sekcije">
-          <p className="oznaka">Detalji</p>
-          <h2>Detalji plana</h2>
+          <p className="oznaka">Pregled plana</p>
+          <h2>Cjelokupan pregled putovanja</h2>
         </div>
-        <DetaljiPlanaPutovanja planPutovanja={stanje.odabraniPlan} />
+        <PregledPlanaPutovanja
+          planPutovanja={stanje.odabraniPlan}
+          destinacije={stanje.destinacije}
+          aktivnosti={stanje.aktivnosti}
+          troskovi={stanje.troskovi}
+          pregledBudzeta={stanje.pregledBudzeta}
+        />
       </section>
 
-      <section className="sekcija-sadrzaja">
+      <section className="sekcija-sadrzaja" id="sekcija-destinacije">
         <div className="naslov-sekcije">
           <p className="oznaka">Destinacije</p>
           <h2>{modFormeDestinacije === 'izmjena' ? 'Izmjena destinacije' : 'Nova destinacija'}</h2>
@@ -434,7 +440,7 @@ export default function PlanoviPutovanjaPage() {
         )}
       </section>
 
-      <section className="sekcija-sadrzaja">
+      <section className="sekcija-sadrzaja" id="sekcija-troskovi">
         <div className="naslov-sekcije">
           <p className="oznaka">Troskovi</p>
           <h2>{modFormeTroska === 'izmjena' ? 'Izmjena troska' : 'Novi trosak'}</h2>
@@ -469,7 +475,7 @@ export default function PlanoviPutovanjaPage() {
         )}
       </section>
 
-      <section className="sekcija-sadrzaja">
+      <section className="sekcija-sadrzaja" id="sekcija-aktivnosti">
         <div className="naslov-sekcije">
           <p className="oznaka">Aktivnosti</p>
           <h2>{modFormeAktivnosti === 'izmjena' ? 'Izmjena aktivnosti' : 'Nova aktivnost'}</h2>
