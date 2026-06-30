@@ -17,7 +17,7 @@ public sealed class AppDbContext : DbContext
 
     public DbSet<AktivnostEntity> Aktivnosti => Set<AktivnostEntity>();
 
-    public DbSet<ExpenseEntity> Expenses => Set<ExpenseEntity>();
+    public DbSet<TrosakEntity> Troskovi => Set<TrosakEntity>();
 
     public DbSet<ChecklistItemEntity> ChecklistItems => Set<ChecklistItemEntity>();
 
@@ -78,13 +78,14 @@ public sealed class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        modelBuilder.Entity<ExpenseEntity>(trosak =>
+        modelBuilder.Entity<TrosakEntity>(trosak =>
         {
+            trosak.ToTable("Troskovi");
             trosak.HasKey(t => t.Id);
-            trosak.Property(t => t.Title).HasMaxLength(160).IsRequired();
-            trosak.Property(t => t.Category).HasMaxLength(80).IsRequired();
-            trosak.Property(t => t.Amount).HasPrecision(18, 2);
-            trosak.Property(t => t.Description).HasMaxLength(1000);
+            trosak.Property(t => t.Naziv).HasMaxLength(160).IsRequired();
+            trosak.Property(t => t.Kategorija).HasMaxLength(80).IsRequired();
+            trosak.Property(t => t.Iznos).HasPrecision(18, 2);
+            trosak.Property(t => t.Opis).HasMaxLength(1000);
             trosak.HasOne(t => t.PlanPutovanja)
                 .WithMany(plan => plan.Troskovi)
                 .HasForeignKey(t => t.PlanPutovanjaId)

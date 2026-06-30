@@ -11,5 +11,7 @@ public interface IValidatorService : IService
 
     Task<RezultatValidacijeDto> ValidirajAktivnostAsync(AktivnostUpisDto zahtjev);
 
+    Task<RezultatValidacijeDto> ValidirajTrosakAsync(TrosakUpisDto zahtjev);
+
     Task<RezultatValidacijeDto> ValidateShareAccessAsync(string token, ShareAccessType requiredAccess);
 }

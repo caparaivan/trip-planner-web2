@@ -17,6 +17,16 @@ internal sealed class ValidatorSfService : StatelessService, IValidatorService
         "Otkazano"
     };
 
+    private static readonly HashSet<string> DozvoljeneKategorijeTroskova = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Prevoz",
+        "Smjestaj",
+        "Hrana",
+        "Ulaznice",
+        "Kupovina",
+        "Ostalo"
+    };
+
     public ValidatorSfService(StatelessServiceContext context) : base(context)
     {
     }
@@ -116,6 +126,39 @@ internal sealed class ValidatorSfService : StatelessService, IValidatorService
         else if (!DozvoljeniStatusiAktivnosti.Contains(zahtjev.Status.Trim()))
         {
             greske.Add("Status aktivnosti mora biti: Planirano, Rezervisano, Zavrseno ili Otkazano.");
+        }
+
+        return Task.FromResult(greske.Count == 0
+            ? RezultatValidacijeDto.Uspjesno()
+            : RezultatValidacijeDto.Neuspjesno(greske));
+    }
+
+    public Task<RezultatValidacijeDto> ValidirajTrosakAsync(TrosakUpisDto zahtjev)
+    {
+        var greske = new List<string>();
+
+        if (string.IsNullOrWhiteSpace(zahtjev.Naziv))
+        {
+            greske.Add("Naziv troska je obavezan.");
+        }
+
+        if (string.IsNullOrWhiteSpace(zahtjev.Kategorija))
+        {
+            greske.Add("Kategorija troska je obavezna.");
+        }
+        else if (!DozvoljeneKategorijeTroskova.Contains(zahtjev.Kategorija.Trim()))
+        {
+            greske.Add("Kategorija troska mora biti: Prevoz, Smjestaj, Hrana, Ulaznice, Kupovina ili Ostalo.");
+        }
+
+        if (zahtjev.Iznos < 0)
+        {
+            greske.Add("Iznos troska ne moze biti negativan.");
+        }
+
+        if (zahtjev.Datum == default)
+        {
+            greske.Add("Datum troska je obavezan.");
         }
 
         return Task.FromResult(greske.Count == 0

@@ -7,7 +7,7 @@ public static class PlanPutovanjaMapper
 {
     public static PlanPutovanjaDto UDto(PlanPutovanjaEntity planPutovanja)
     {
-        var ukupanTrosak = planPutovanja.Troskovi.Sum(trosak => trosak.Amount);
+        var ukupanTrosak = planPutovanja.Troskovi.Sum(trosak => trosak.Iznos);
 
         return new PlanPutovanjaDto
         {
