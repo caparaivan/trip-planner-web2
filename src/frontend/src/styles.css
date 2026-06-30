@@ -15,6 +15,7 @@ body {
 
 button,
 input,
+select,
 textarea {
   font: inherit;
 }
@@ -80,6 +81,20 @@ textarea {
   grid-template-columns: minmax(0, 1fr) minmax(320px, 0.85fr);
 }
 
+.mreza-aktivnosti {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: minmax(0, 0.9fr) minmax(420px, 1.1fr);
+}
+
+.panel-aktivnosti {
+  min-width: 0;
+}
+
+.panel-aktivnosti-sirok {
+  grid-column: 1 / -1;
+}
+
 .mreza-forme {
   display: grid;
   gap: 16px;
@@ -94,6 +109,7 @@ label {
 }
 
 input,
+select,
 textarea {
   border: 1px solid #bcc9d8;
   border-radius: 6px;
@@ -160,13 +176,15 @@ button:disabled {
 }
 
 .lista-planova,
-.lista-destinacija {
+.lista-destinacija,
+.lista-aktivnosti {
   display: grid;
   gap: 12px;
 }
 
 .stavka-plana,
-.stavka-destinacije {
+.stavka-destinacije,
+.stavka-aktivnosti {
   border: 1px solid #d9e1ec;
   border-radius: 8px;
   display: grid;
@@ -178,7 +196,8 @@ button:disabled {
   grid-template-columns: 1fr auto auto;
 }
 
-.stavka-destinacije {
+.stavka-destinacije,
+.stavka-aktivnosti {
   grid-template-columns: 1fr;
 }
 
@@ -191,17 +210,23 @@ button:disabled {
 .stavka-plana p,
 .stavka-destinacije h3,
 .stavka-destinacije p,
+.stavka-aktivnosti h4,
+.stavka-aktivnosti p,
+.grupa-aktivnosti h3,
+.kalendar-aktivnosti h3,
 .detalji-plana h3 {
   margin: 0;
 }
 
 .stavka-plana p,
-.stavka-destinacije p {
+.stavka-destinacije p,
+.stavka-aktivnosti p {
   color: #5d6b7d;
 }
 
 .stavka-plana dl,
 .stavka-destinacije dl,
+.stavka-aktivnosti dl,
 .detalji-plana dl {
   display: grid;
   gap: 10px;
@@ -216,12 +241,17 @@ button:disabled {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.stavka-aktivnosti dl {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .detalji-plana dl {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .stavka-plana dt,
 .stavka-destinacije dt,
+.stavka-aktivnosti dt,
 .detalji-plana dt {
   color: #69788a;
   font-size: 0.8rem;
@@ -230,6 +260,7 @@ button:disabled {
 
 .stavka-plana dd,
 .stavka-destinacije dd,
+.stavka-aktivnosti dd,
 .detalji-plana dd {
   margin: 0;
 }
@@ -248,10 +279,149 @@ button:disabled {
   margin: 0;
 }
 
+.grupa-aktivnosti {
+  display: grid;
+  gap: 10px;
+}
+
+.grupa-aktivnosti h3 {
+  color: #25314a;
+  font-size: 1rem;
+}
+
+.red-naslova-aktivnosti {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.status-aktivnosti {
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 9px;
+}
+
+.status-aktivnosti.planirano,
+.aktivnost-kalendara.planirano {
+  background: #e8f1fb;
+  color: #234f7a;
+}
+
+.status-aktivnosti.rezervisano,
+.aktivnost-kalendara.rezervisano {
+  background: #eef3e7;
+  color: #3f6331;
+}
+
+.status-aktivnosti.zavrseno,
+.aktivnost-kalendara.zavrseno {
+  background: #e7f5ec;
+  color: #22643a;
+}
+
+.status-aktivnosti.otkazano,
+.aktivnost-kalendara.otkazano {
+  background: #fdeaea;
+  color: #8a1f1f;
+}
+
+.kalendar-aktivnosti {
+  display: grid;
+  gap: 14px;
+}
+
+.zaglavlje-kalendara {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: auto 1fr auto;
+}
+
+.zaglavlje-kalendara h3 {
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.kalendar-mreza {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  overflow: hidden;
+}
+
+.dan-sedmice,
+.dan-kalendara {
+  background: #ffffff;
+  border: 1px solid #d9e1ec;
+}
+
+.dan-sedmice {
+  color: #69788a;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 8px;
+  text-align: center;
+}
+
+.dan-kalendara {
+  display: grid;
+  gap: 8px;
+  min-height: 112px;
+  padding: 8px;
+}
+
+.dan-kalendara.van-mjeseca {
+  background: #f6f8fb;
+  color: #9aa9b8;
+}
+
+.datum-kalendara {
+  font-weight: 700;
+}
+
+.aktivnosti-u-danu {
+  display: grid;
+  gap: 5px;
+}
+
+.aktivnost-kalendara {
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  display: grid;
+  font-size: 0.78rem;
+  font-weight: 700;
+  gap: 2px;
+  justify-self: stretch;
+  line-height: 1.25;
+  min-width: 0;
+  overflow: hidden;
+  padding: 6px;
+  text-align: left;
+  text-overflow: ellipsis;
+}
+
+.aktivnost-kalendara span {
+  font-size: 0.72rem;
+  opacity: 0.8;
+}
+
+.jos-aktivnosti {
+  color: #5d6b7d;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
 @media (max-width: 860px) {
   .zaglavlje-aplikacije,
   .stavka-plana,
-  .mreza-destinacija {
+  .mreza-destinacija,
+  .mreza-aktivnosti,
+  .zaglavlje-kalendara {
     align-items: start;
     grid-template-columns: 1fr;
   }
@@ -264,7 +434,19 @@ button:disabled {
   .mreza-forme,
   .stavka-plana dl,
   .stavka-destinacije dl,
+  .stavka-aktivnosti dl,
   .detalji-plana dl {
     grid-template-columns: 1fr;
+  }
+
+  .kalendar-mreza {
+    font-size: 0.9rem;
+    grid-template-columns: repeat(7, 112px);
+    overflow-x: auto;
+  }
+
+  .dan-kalendara {
+    min-height: 96px;
+    min-width: 112px;
   }
 }

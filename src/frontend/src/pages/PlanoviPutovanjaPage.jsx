@@ -1,10 +1,19 @@
 import { useEffect, useState } from 'react';
+import FormaAktivnosti from '../components/aktivnosti/FormaAktivnosti.jsx';
+import KalendarAktivnosti from '../components/aktivnosti/KalendarAktivnosti.jsx';
+import ListaAktivnosti from '../components/aktivnosti/ListaAktivnosti.jsx';
 import FormaDestinacije from '../components/destinacije/FormaDestinacije.jsx';
 import ListaDestinacija from '../components/destinacije/ListaDestinacija.jsx';
 import DetaljiPlanaPutovanja from '../components/planovi/DetaljiPlanaPutovanja.jsx';
 import FormaPlanaPutovanja from '../components/planovi/FormaPlanaPutovanja.jsx';
 import ListaPlanovaPutovanja from '../components/planovi/ListaPlanovaPutovanja.jsx';
 import { useAppContext } from '../context/AppContext.jsx';
+import {
+  kreirajAktivnost,
+  obrisiAktivnost,
+  izmijeniAktivnost,
+  vratiAktivnosti
+} from '../services/aktivnostService.js';
 import {
   kreirajDestinaciju,
   obrisiDestinaciju,
@@ -25,6 +34,8 @@ export default function PlanoviPutovanjaPage() {
   const [planZaIzmjenu, setPlanZaIzmjenu] = useState(null);
   const [modFormeDestinacije, setModFormeDestinacije] = useState('kreiranje');
   const [destinacijaZaIzmjenu, setDestinacijaZaIzmjenu] = useState(null);
+  const [modFormeAktivnosti, setModFormeAktivnosti] = useState('kreiranje');
+  const [aktivnostZaIzmjenu, setAktivnostZaIzmjenu] = useState(null);
 
   useEffect(() => {
     let aktivno = true;
@@ -65,6 +76,8 @@ export default function PlanoviPutovanjaPage() {
       dispatch({ type: 'planKreiran', payload: kreiraniPlan });
       setModFormeDestinacije('kreiranje');
       setDestinacijaZaIzmjenu(null);
+      setModFormeAktivnosti('kreiranje');
+      setAktivnostZaIzmjenu(null);
     } catch (error) {
       dispatch({ type: 'zahtjevNeuspjesan', payload: error.message });
     }
@@ -73,12 +86,18 @@ export default function PlanoviPutovanjaPage() {
   const handleDetalji = async (id) => {
     dispatch({ type: 'zahtjevPokrenut' });
     try {
-      const planPutovanja = await vratiPlanPutovanja(id);
-      const destinacije = await vratiDestinacije(id);
+      const [planPutovanja, destinacije, aktivnosti] = await Promise.all([
+        vratiPlanPutovanja(id),
+        vratiDestinacije(id),
+        vratiAktivnosti(id)
+      ]);
       dispatch({ type: 'detaljiPlanaUcitani', payload: planPutovanja });
       dispatch({ type: 'destinacijeUcitane', payload: destinacije || [] });
+      dispatch({ type: 'aktivnostiUcitane', payload: aktivnosti || [] });
       setModFormeDestinacije('kreiranje');
       setDestinacijaZaIzmjenu(null);
+      setModFormeAktivnosti('kreiranje');
+      setAktivnostZaIzmjenu(null);
     } catch (error) {
       dispatch({ type: 'zahtjevNeuspjesan', payload: error.message });
     }
@@ -86,12 +105,16 @@ export default function PlanoviPutovanjaPage() {
 
   const handleIzmjena = async (plan) => {
     try {
-      const planPutovanja = await vratiPlanPutovanja(plan.id);
-      const destinacije = await vratiDestinacije(plan.id);
+      const [planPutovanja, destinacije, aktivnosti] = await Promise.all([
+        vratiPlanPutovanja(plan.id),
+        vratiDestinacije(plan.id),
+        vratiAktivnosti(plan.id)
+      ]);
       setPlanZaIzmjenu(planPutovanja);
       setModForme('izmjena');
       dispatch({ type: 'detaljiPlanaUcitani', payload: planPutovanja });
       dispatch({ type: 'destinacijeUcitane', payload: destinacije || [] });
+      dispatch({ type: 'aktivnostiUcitane', payload: aktivnosti || [] });
     } catch (error) {
       dispatch({ type: 'zahtjevNeuspjesan', payload: error.message });
     }
@@ -113,6 +136,8 @@ export default function PlanoviPutovanjaPage() {
       }
       setDestinacijaZaIzmjenu(null);
       setModFormeDestinacije('kreiranje');
+      setAktivnostZaIzmjenu(null);
+      setModFormeAktivnosti('kreiranje');
     } catch (error) {
       dispatch({ type: 'zahtjevNeuspjesan', payload: error.message });
     }
@@ -182,6 +207,65 @@ export default function PlanoviPutovanjaPage() {
     setModFormeDestinacije('kreiranje');
   };
 
+  const handleSacuvajAktivnost = async (podaciForme) => {
+    if (!stanje.odabraniPlan) {
+      return;
+    }
+
+    dispatch({ type: 'zahtjevPokrenut' });
+    try {
+      if (modFormeAktivnosti === 'izmjena' && aktivnostZaIzmjenu) {
+        const izmijenjenaAktivnost = await izmijeniAktivnost(
+          stanje.odabraniPlan.id,
+          aktivnostZaIzmjenu.id,
+          podaciForme
+        );
+        dispatch({ type: 'aktivnostIzmijenjena', payload: izmijenjenaAktivnost });
+        setAktivnostZaIzmjenu(null);
+        setModFormeAktivnosti('kreiranje');
+        return;
+      }
+
+      const kreiranaAktivnost = await kreirajAktivnost(stanje.odabraniPlan.id, podaciForme);
+      dispatch({ type: 'aktivnostKreirana', payload: kreiranaAktivnost });
+    } catch (error) {
+      dispatch({ type: 'zahtjevNeuspjesan', payload: error.message });
+    }
+  };
+
+  const handleIzmjenaAktivnosti = (aktivnost) => {
+    setAktivnostZaIzmjenu(aktivnost);
+    setModFormeAktivnosti('izmjena');
+  };
+
+  const handleBrisanjeAktivnosti = async (id) => {
+    if (!stanje.odabraniPlan) {
+      return;
+    }
+
+    const potvrdjeno = window.confirm('Da li ste sigurni da zelite obrisati aktivnost?');
+    if (!potvrdjeno) {
+      return;
+    }
+
+    dispatch({ type: 'zahtjevPokrenut' });
+    try {
+      await obrisiAktivnost(stanje.odabraniPlan.id, id);
+      dispatch({ type: 'aktivnostObrisana', payload: id });
+      if (aktivnostZaIzmjenu?.id === id) {
+        setAktivnostZaIzmjenu(null);
+        setModFormeAktivnosti('kreiranje');
+      }
+    } catch (error) {
+      dispatch({ type: 'zahtjevNeuspjesan', payload: error.message });
+    }
+  };
+
+  const handleOdustaniAktivnost = () => {
+    setAktivnostZaIzmjenu(null);
+    setModFormeAktivnosti('kreiranje');
+  };
+
   return (
     <main className="okvir-stranice">
       <section className="sekcija-sadrzaja">
@@ -247,6 +331,45 @@ export default function PlanoviPutovanjaPage() {
               onIzmjena={handleIzmjenaDestinacije}
               onBrisanje={handleBrisanjeDestinacije}
             />
+          </div>
+        )}
+      </section>
+
+      <section className="sekcija-sadrzaja">
+        <div className="naslov-sekcije">
+          <p className="oznaka">Aktivnosti</p>
+          <h2>{modFormeAktivnosti === 'izmjena' ? 'Izmjena aktivnosti' : 'Nova aktivnost'}</h2>
+        </div>
+
+        {!stanje.odabraniPlan && <p className="prazno-stanje">Prvo izaberite plan putovanja.</p>}
+
+        {stanje.odabraniPlan && (
+          <div className="mreza-aktivnosti">
+            <div className="panel-aktivnosti">
+              <FormaAktivnosti
+                mod={modFormeAktivnosti}
+                aktivnostZaIzmjenu={aktivnostZaIzmjenu}
+                disabled={stanje.ucitavanje}
+                onSubmit={handleSacuvajAktivnost}
+                onCancel={handleOdustaniAktivnost}
+              />
+            </div>
+
+            <div className="panel-aktivnosti">
+              <KalendarAktivnosti
+                aktivnosti={stanje.aktivnosti}
+                planPutovanja={stanje.odabraniPlan}
+                onIzmjena={handleIzmjenaAktivnosti}
+              />
+            </div>
+
+            <div className="panel-aktivnosti panel-aktivnosti-sirok">
+              <ListaAktivnosti
+                aktivnosti={stanje.aktivnosti}
+                onIzmjena={handleIzmjenaAktivnosti}
+                onBrisanje={handleBrisanjeAktivnosti}
+              />
+            </div>
           </div>
         )}
       </section>
