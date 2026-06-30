@@ -9,5 +9,7 @@ public interface IValidatorService : IService
 
     Task<RezultatValidacijeDto> ValidirajDestinacijuAsync(DestinacijaUpisDto zahtjev);
 
+    Task<RezultatValidacijeDto> ValidirajAktivnostAsync(AktivnostUpisDto zahtjev);
+
     Task<RezultatValidacijeDto> ValidateShareAccessAsync(string token, ShareAccessType requiredAccess);
 }

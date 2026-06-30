@@ -15,7 +15,7 @@ public sealed class AppDbContext : DbContext
 
     public DbSet<DestinacijaEntity> Destinacije => Set<DestinacijaEntity>();
 
-    public DbSet<ActivityEntity> Activities => Set<ActivityEntity>();
+    public DbSet<AktivnostEntity> Aktivnosti => Set<AktivnostEntity>();
 
     public DbSet<ExpenseEntity> Expenses => Set<ExpenseEntity>();
 
@@ -63,14 +63,15 @@ public sealed class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        modelBuilder.Entity<ActivityEntity>(aktivnost =>
+        modelBuilder.Entity<AktivnostEntity>(aktivnost =>
         {
+            aktivnost.ToTable("Aktivnosti");
             aktivnost.HasKey(a => a.Id);
-            aktivnost.Property(a => a.Title).HasMaxLength(160).IsRequired();
-            aktivnost.Property(a => a.Location).HasMaxLength(200);
-            aktivnost.Property(a => a.Description).HasMaxLength(1000);
+            aktivnost.Property(a => a.Naziv).HasMaxLength(160).IsRequired();
+            aktivnost.Property(a => a.Lokacija).HasMaxLength(200);
+            aktivnost.Property(a => a.Opis).HasMaxLength(1000);
             aktivnost.Property(a => a.Status).HasMaxLength(40).IsRequired();
-            aktivnost.Property(a => a.EstimatedCost).HasPrecision(18, 2);
+            aktivnost.Property(a => a.ProcijenjeniTrosak).HasPrecision(18, 2);
             aktivnost.HasOne(a => a.PlanPutovanja)
                 .WithMany(plan => plan.Aktivnosti)
                 .HasForeignKey(a => a.PlanPutovanjaId)

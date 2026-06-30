@@ -24,7 +24,7 @@ public sealed class PlanPutovanjaEntity
 
     public ICollection<DestinacijaEntity> Destinacije { get; set; } = new List<DestinacijaEntity>();
 
-    public ICollection<ActivityEntity> Aktivnosti { get; set; } = new List<ActivityEntity>();
+    public ICollection<AktivnostEntity> Aktivnosti { get; set; } = new List<AktivnostEntity>();
 
     public ICollection<ExpenseEntity> Troskovi { get; set; } = new List<ExpenseEntity>();
 

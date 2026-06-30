@@ -9,6 +9,14 @@ namespace ValidatorService;
 
 internal sealed class ValidatorSfService : StatelessService, IValidatorService
 {
+    private static readonly HashSet<string> DozvoljeniStatusiAktivnosti = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Planirano",
+        "Rezervisano",
+        "Zavrseno",
+        "Otkazano"
+    };
+
     public ValidatorSfService(StatelessServiceContext context) : base(context)
     {
     }
@@ -75,6 +83,39 @@ internal sealed class ValidatorSfService : StatelessService, IValidatorService
         if (zahtjev.DatumOdlaska.Date < zahtjev.DatumDolaska.Date)
         {
             greske.Add("Datum odlaska ne moze biti prije datuma dolaska.");
+        }
+
+        return Task.FromResult(greske.Count == 0
+            ? RezultatValidacijeDto.Uspjesno()
+            : RezultatValidacijeDto.Neuspjesno(greske));
+    }
+
+    public Task<RezultatValidacijeDto> ValidirajAktivnostAsync(AktivnostUpisDto zahtjev)
+    {
+        var greske = new List<string>();
+
+        if (string.IsNullOrWhiteSpace(zahtjev.Naziv))
+        {
+            greske.Add("Naziv aktivnosti je obavezan.");
+        }
+
+        if (zahtjev.Datum == default)
+        {
+            greske.Add("Datum aktivnosti je obavezan.");
+        }
+
+        if (zahtjev.ProcijenjeniTrosak < 0)
+        {
+            greske.Add("Procijenjeni trosak ne moze biti negativan.");
+        }
+
+        if (string.IsNullOrWhiteSpace(zahtjev.Status))
+        {
+            greske.Add("Status aktivnosti je obavezan.");
+        }
+        else if (!DozvoljeniStatusiAktivnosti.Contains(zahtjev.Status.Trim()))
+        {
+            greske.Add("Status aktivnosti mora biti: Planirano, Rezervisano, Zavrseno ili Otkazano.");
         }
 
         return Task.FromResult(greske.Count == 0
