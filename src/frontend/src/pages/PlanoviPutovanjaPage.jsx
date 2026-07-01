@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import FormaAktivnosti from '../components/aktivnosti/FormaAktivnosti.jsx';
 import KalendarAktivnosti from '../components/aktivnosti/KalendarAktivnosti.jsx';
 import ListaAktivnosti from '../components/aktivnosti/ListaAktivnosti.jsx';
+import FormaStavkeCheckListe from '../components/checklista/FormaStavkeCheckListe.jsx';
+import ListaStavkiCheckListe from '../components/checklista/ListaStavkiCheckListe.jsx';
+import PregledCheckListe from '../components/checklista/PregledCheckListe.jsx';
 import FormaDestinacije from '../components/destinacije/FormaDestinacije.jsx';
 import ListaDestinacija from '../components/destinacije/ListaDestinacija.jsx';
 import FormaPlanaPutovanja from '../components/planovi/FormaPlanaPutovanja.jsx';
@@ -23,6 +26,12 @@ import {
   izmijeniDestinaciju,
   vratiDestinacije
 } from '../services/destinacijaService.js';
+import {
+  kreirajStavkuCheckListe,
+  obrisiStavkuCheckListe,
+  izmijeniStavkuCheckListe,
+  vratiStavkeCheckListe
+} from '../services/checkListaService.js';
 import {
   kreirajPlanPutovanja,
   obrisiPlanPutovanja,
@@ -48,6 +57,8 @@ export default function PlanoviPutovanjaPage() {
   const [aktivnostZaIzmjenu, setAktivnostZaIzmjenu] = useState(null);
   const [modFormeTroska, setModFormeTroska] = useState('kreiranje');
   const [trosakZaIzmjenu, setTrosakZaIzmjenu] = useState(null);
+  const [modFormeCheckListe, setModFormeCheckListe] = useState('kreiranje');
+  const [stavkaCheckListeZaIzmjenu, setStavkaCheckListeZaIzmjenu] = useState(null);
 
   useEffect(() => {
     let aktivno = true;
@@ -92,6 +103,8 @@ export default function PlanoviPutovanjaPage() {
       setAktivnostZaIzmjenu(null);
       setModFormeTroska('kreiranje');
       setTrosakZaIzmjenu(null);
+      setModFormeCheckListe('kreiranje');
+      setStavkaCheckListeZaIzmjenu(null);
     } catch (error) {
       dispatch({ type: 'zahtjevNeuspjesan', payload: error.message });
     }
@@ -100,24 +113,28 @@ export default function PlanoviPutovanjaPage() {
   const handleDetalji = async (id) => {
     dispatch({ type: 'zahtjevPokrenut' });
     try {
-      const [planPutovanja, destinacije, aktivnosti, troskovi, pregledBudzeta] = await Promise.all([
+      const [planPutovanja, destinacije, aktivnosti, troskovi, pregledBudzeta, stavkeCheckListe] = await Promise.all([
         vratiPlanPutovanja(id),
         vratiDestinacije(id),
         vratiAktivnosti(id),
         vratiTroskove(id),
-        vratiPregledBudzeta(id)
+        vratiPregledBudzeta(id),
+        vratiStavkeCheckListe(id)
       ]);
       dispatch({ type: 'detaljiPlanaUcitani', payload: planPutovanja });
       dispatch({ type: 'destinacijeUcitane', payload: destinacije || [] });
       dispatch({ type: 'aktivnostiUcitane', payload: aktivnosti || [] });
       dispatch({ type: 'troskoviUcitani', payload: troskovi || [] });
       dispatch({ type: 'pregledBudzetaUcitan', payload: pregledBudzeta });
+      dispatch({ type: 'stavkeCheckListeUcitane', payload: stavkeCheckListe || [] });
       setModFormeDestinacije('kreiranje');
       setDestinacijaZaIzmjenu(null);
       setModFormeAktivnosti('kreiranje');
       setAktivnostZaIzmjenu(null);
       setModFormeTroska('kreiranje');
       setTrosakZaIzmjenu(null);
+      setModFormeCheckListe('kreiranje');
+      setStavkaCheckListeZaIzmjenu(null);
     } catch (error) {
       dispatch({ type: 'zahtjevNeuspjesan', payload: error.message });
     }
@@ -125,12 +142,13 @@ export default function PlanoviPutovanjaPage() {
 
   const handleIzmjena = async (plan) => {
     try {
-      const [planPutovanja, destinacije, aktivnosti, troskovi, pregledBudzeta] = await Promise.all([
+      const [planPutovanja, destinacije, aktivnosti, troskovi, pregledBudzeta, stavkeCheckListe] = await Promise.all([
         vratiPlanPutovanja(plan.id),
         vratiDestinacije(plan.id),
         vratiAktivnosti(plan.id),
         vratiTroskove(plan.id),
-        vratiPregledBudzeta(plan.id)
+        vratiPregledBudzeta(plan.id),
+        vratiStavkeCheckListe(plan.id)
       ]);
       setPlanZaIzmjenu(planPutovanja);
       setModForme('izmjena');
@@ -139,12 +157,15 @@ export default function PlanoviPutovanjaPage() {
       dispatch({ type: 'aktivnostiUcitane', payload: aktivnosti || [] });
       dispatch({ type: 'troskoviUcitani', payload: troskovi || [] });
       dispatch({ type: 'pregledBudzetaUcitan', payload: pregledBudzeta });
+      dispatch({ type: 'stavkeCheckListeUcitane', payload: stavkeCheckListe || [] });
       setModFormeDestinacije('kreiranje');
       setDestinacijaZaIzmjenu(null);
       setModFormeAktivnosti('kreiranje');
       setAktivnostZaIzmjenu(null);
       setModFormeTroska('kreiranje');
       setTrosakZaIzmjenu(null);
+      setModFormeCheckListe('kreiranje');
+      setStavkaCheckListeZaIzmjenu(null);
     } catch (error) {
       dispatch({ type: 'zahtjevNeuspjesan', payload: error.message });
     }
@@ -170,6 +191,8 @@ export default function PlanoviPutovanjaPage() {
       setModFormeAktivnosti('kreiranje');
       setTrosakZaIzmjenu(null);
       setModFormeTroska('kreiranje');
+      setStavkaCheckListeZaIzmjenu(null);
+      setModFormeCheckListe('kreiranje');
     } catch (error) {
       dispatch({ type: 'zahtjevNeuspjesan', payload: error.message });
     }
@@ -365,6 +388,86 @@ export default function PlanoviPutovanjaPage() {
     setModFormeTroska('kreiranje');
   };
 
+  const handleSacuvajStavkuCheckListe = async (podaciForme) => {
+    if (!stanje.odabraniPlan) {
+      return;
+    }
+
+    dispatch({ type: 'zahtjevPokrenut' });
+    try {
+      if (modFormeCheckListe === 'izmjena' && stavkaCheckListeZaIzmjenu) {
+        const izmijenjenaStavka = await izmijeniStavkuCheckListe(
+          stanje.odabraniPlan.id,
+          stavkaCheckListeZaIzmjenu.id,
+          podaciForme
+        );
+        dispatch({ type: 'stavkaCheckListeIzmijenjena', payload: izmijenjenaStavka });
+        setStavkaCheckListeZaIzmjenu(null);
+        setModFormeCheckListe('kreiranje');
+        return;
+      }
+
+      const kreiranaStavka = await kreirajStavkuCheckListe(stanje.odabraniPlan.id, podaciForme);
+      dispatch({ type: 'stavkaCheckListeKreirana', payload: kreiranaStavka });
+    } catch (error) {
+      dispatch({ type: 'zahtjevNeuspjesan', payload: error.message });
+    }
+  };
+
+  const handlePromjenaStatusaStavkeCheckListe = async (stavka) => {
+    if (!stanje.odabraniPlan) {
+      return;
+    }
+
+    dispatch({ type: 'zahtjevPokrenut' });
+    try {
+      const izmijenjenaStavka = await izmijeniStavkuCheckListe(stanje.odabraniPlan.id, stavka.id, {
+        naziv: stavka.naziv,
+        zavrseno: !stavka.zavrseno
+      });
+      dispatch({ type: 'stavkaCheckListeIzmijenjena', payload: izmijenjenaStavka });
+
+      if (stavkaCheckListeZaIzmjenu?.id === stavka.id) {
+        setStavkaCheckListeZaIzmjenu(izmijenjenaStavka);
+      }
+    } catch (error) {
+      dispatch({ type: 'zahtjevNeuspjesan', payload: error.message });
+    }
+  };
+
+  const handleIzmjenaStavkeCheckListe = (stavka) => {
+    setStavkaCheckListeZaIzmjenu(stavka);
+    setModFormeCheckListe('izmjena');
+  };
+
+  const handleBrisanjeStavkeCheckListe = async (id) => {
+    if (!stanje.odabraniPlan) {
+      return;
+    }
+
+    const potvrdjeno = window.confirm('Da li ste sigurni da zelite obrisati stavku checkliste?');
+    if (!potvrdjeno) {
+      return;
+    }
+
+    dispatch({ type: 'zahtjevPokrenut' });
+    try {
+      await obrisiStavkuCheckListe(stanje.odabraniPlan.id, id);
+      dispatch({ type: 'stavkaCheckListeObrisana', payload: id });
+      if (stavkaCheckListeZaIzmjenu?.id === id) {
+        setStavkaCheckListeZaIzmjenu(null);
+        setModFormeCheckListe('kreiranje');
+      }
+    } catch (error) {
+      dispatch({ type: 'zahtjevNeuspjesan', payload: error.message });
+    }
+  };
+
+  const handleOdustaniStavkaCheckListe = () => {
+    setStavkaCheckListeZaIzmjenu(null);
+    setModFormeCheckListe('kreiranje');
+  };
+
   return (
     <main className="okvir-stranice">
       <section className="sekcija-sadrzaja">
@@ -410,6 +513,7 @@ export default function PlanoviPutovanjaPage() {
           destinacije={stanje.destinacije}
           aktivnosti={stanje.aktivnosti}
           troskovi={stanje.troskovi}
+          stavkeCheckListe={stanje.stavkeCheckListe}
           pregledBudzeta={stanje.pregledBudzeta}
         />
       </section>
@@ -469,6 +573,42 @@ export default function PlanoviPutovanjaPage() {
                 troskovi={stanje.troskovi}
                 onIzmjena={handleIzmjenaTroska}
                 onBrisanje={handleBrisanjeTroska}
+              />
+            </div>
+          </div>
+        )}
+      </section>
+
+      <section className="sekcija-sadrzaja" id="sekcija-checklista">
+        <div className="naslov-sekcije">
+          <p className="oznaka">Checklista</p>
+          <h2>{modFormeCheckListe === 'izmjena' ? 'Izmjena stavke' : 'Nova stavka'}</h2>
+        </div>
+
+        {!stanje.odabraniPlan && <p className="prazno-stanje">Prvo izaberite plan putovanja.</p>}
+
+        {stanje.odabraniPlan && (
+          <div className="mreza-checkliste">
+            <div className="panel-checkliste">
+              <FormaStavkeCheckListe
+                mod={modFormeCheckListe}
+                stavkaZaIzmjenu={stavkaCheckListeZaIzmjenu}
+                disabled={stanje.ucitavanje}
+                onSubmit={handleSacuvajStavkuCheckListe}
+                onCancel={handleOdustaniStavkaCheckListe}
+              />
+            </div>
+
+            <div className="panel-checkliste">
+              <PregledCheckListe stavkeCheckListe={stanje.stavkeCheckListe} />
+            </div>
+
+            <div className="panel-checkliste panel-checkliste-sirok">
+              <ListaStavkiCheckListe
+                stavkeCheckListe={stanje.stavkeCheckListe}
+                onPromjenaStatusa={handlePromjenaStatusaStavkeCheckListe}
+                onIzmjena={handleIzmjenaStavkeCheckListe}
+                onBrisanje={handleBrisanjeStavkeCheckListe}
               />
             </div>
           </div>

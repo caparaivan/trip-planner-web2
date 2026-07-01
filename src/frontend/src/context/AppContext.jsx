@@ -8,6 +8,7 @@ const pocetnoStanje = {
   destinacije: [],
   aktivnosti: [],
   troskovi: [],
+  stavkeCheckListe: [],
   pregledBudzeta: null,
   ucitavanje: false,
   greska: '',
@@ -28,6 +29,8 @@ function appReducer(stanje, akcija) {
       return { ...stanje, ucitavanje: false, aktivnosti: sortirajAktivnosti(akcija.payload) };
     case 'troskoviUcitani':
       return { ...stanje, ucitavanje: false, troskovi: sortirajTroskove(akcija.payload) };
+    case 'stavkeCheckListeUcitane':
+      return { ...stanje, ucitavanje: false, stavkeCheckListe: sortirajStavkeCheckListe(akcija.payload) };
     case 'pregledBudzetaUcitan':
       return {
         ...stanje,
@@ -47,6 +50,7 @@ function appReducer(stanje, akcija) {
         destinacije: [],
         aktivnosti: [],
         troskovi: [],
+        stavkeCheckListe: [],
         pregledBudzeta: null,
         porukaUspjeha: 'Plan putovanja je sacuvan.'
       };
@@ -70,6 +74,7 @@ function appReducer(stanje, akcija) {
         destinacije: stanje.odabraniPlan?.id === akcija.payload ? [] : stanje.destinacije,
         aktivnosti: stanje.odabraniPlan?.id === akcija.payload ? [] : stanje.aktivnosti,
         troskovi: stanje.odabraniPlan?.id === akcija.payload ? [] : stanje.troskovi,
+        stavkeCheckListe: stanje.odabraniPlan?.id === akcija.payload ? [] : stanje.stavkeCheckListe,
         pregledBudzeta: stanje.odabraniPlan?.id === akcija.payload ? null : stanje.pregledBudzeta,
         porukaUspjeha: 'Plan putovanja je obrisan.'
       };
@@ -144,8 +149,41 @@ function appReducer(stanje, akcija) {
         troskovi: stanje.troskovi.filter((trosak) => trosak.id !== akcija.payload),
         porukaUspjeha: 'Trosak je obrisan.'
       };
+    case 'stavkaCheckListeKreirana':
+      return {
+        ...stanje,
+        ucitavanje: false,
+        stavkeCheckListe: sortirajStavkeCheckListe([...stanje.stavkeCheckListe, akcija.payload]),
+        porukaUspjeha: 'Stavka checkliste je sacuvana.'
+      };
+    case 'stavkaCheckListeIzmijenjena':
+      return {
+        ...stanje,
+        ucitavanje: false,
+        stavkeCheckListe: sortirajStavkeCheckListe(
+          stanje.stavkeCheckListe.map((stavka) =>
+            stavka.id === akcija.payload.id ? akcija.payload : stavka
+          )
+        ),
+        porukaUspjeha: 'Stavka checkliste je izmijenjena.'
+      };
+    case 'stavkaCheckListeObrisana':
+      return {
+        ...stanje,
+        ucitavanje: false,
+        stavkeCheckListe: stanje.stavkeCheckListe.filter((stavka) => stavka.id !== akcija.payload),
+        porukaUspjeha: 'Stavka checkliste je obrisana.'
+      };
     case 'odabirPonisten':
-      return { ...stanje, odabraniPlan: null, destinacije: [], aktivnosti: [], troskovi: [], pregledBudzeta: null };
+      return {
+        ...stanje,
+        odabraniPlan: null,
+        destinacije: [],
+        aktivnosti: [],
+        troskovi: [],
+        stavkeCheckListe: [],
+        pregledBudzeta: null
+      };
     case 'zahtjevNeuspjesan':
       return { ...stanje, ucitavanje: false, greska: akcija.payload };
     case 'porukeOciscene':
@@ -167,6 +205,16 @@ function sortirajTroskove(troskovi) {
   return [...troskovi].sort((prvi, drugi) => {
     const datum = (drugi.datum || '').localeCompare(prvi.datum || '');
     return datum !== 0 ? datum : prvi.naziv.localeCompare(drugi.naziv);
+  });
+}
+
+function sortirajStavkeCheckListe(stavkeCheckListe) {
+  return [...stavkeCheckListe].sort((prva, druga) => {
+    if (prva.zavrseno !== druga.zavrseno) {
+      return Number(prva.zavrseno) - Number(druga.zavrseno);
+    }
+
+    return (prva.naziv || '').localeCompare(druga.naziv || '');
   });
 }
 

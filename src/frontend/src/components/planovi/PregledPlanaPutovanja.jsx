@@ -3,6 +3,7 @@ export default function PregledPlanaPutovanja({
   destinacije,
   aktivnosti,
   troskovi,
+  stavkeCheckListe = [],
   pregledBudzeta
 }) {
   if (!planPutovanja) {
@@ -11,6 +12,7 @@ export default function PregledPlanaPutovanja({
 
   const aktivnostiPoDanima = grupisiAktivnostiPoDanima(aktivnosti);
   const najnovijiTroskovi = troskovi.slice(0, 4);
+  const zavrseneStavke = stavkeCheckListe.filter((stavka) => stavka.zavrseno).length;
 
   return (
     <article className="pregled-plana">
@@ -26,8 +28,9 @@ export default function PregledPlanaPutovanja({
 
       <nav className="navigacija-pregleda" aria-label="Navigacija kroz plan putovanja">
         <a href="#sekcija-destinacije">Destinacije</a>
-        <a href="#sekcija-aktivnosti">Aktivnosti</a>
         <a href="#sekcija-troskovi">Troskovi</a>
+        <a href="#sekcija-checklista">Checklista</a>
+        <a href="#sekcija-aktivnosti">Aktivnosti</a>
         <a href="#sekcija-napomene">Napomene</a>
       </nav>
 
@@ -118,6 +121,31 @@ export default function PregledPlanaPutovanja({
               </div>
             ))}
           </div>
+        </section>
+
+        <section className="blok-pregleda">
+          <h4>Checklista</h4>
+          {stavkeCheckListe.length === 0 && <p className="prazno-stanje">Nema unesenih stavki checkliste.</p>}
+          {stavkeCheckListe.length > 0 && (
+            <>
+              <p className="napomena-pregleda">
+                Zavrseno {zavrseneStavke} od {stavkeCheckListe.length} stavki.
+              </p>
+              <div className="sazeta-lista">
+                {stavkeCheckListe.slice(0, 4).map((stavka) => (
+                  <div className="stavka-sazetka red-sazetka" key={stavka.id}>
+                    <strong className={stavka.zavrseno ? 'zavrsena-stavka-pregleda' : ''}>
+                      {stavka.naziv}
+                    </strong>
+                    <span>{stavka.zavrseno ? 'Zavrseno' : 'Nije zavrseno'}</span>
+                  </div>
+                ))}
+              </div>
+              {stavkeCheckListe.length > 4 && (
+                <p className="napomena-pregleda">Jos {stavkeCheckListe.length - 4} stavki.</p>
+              )}
+            </>
+          )}
         </section>
 
         <section className="blok-pregleda blok-pregleda-sirok" id="sekcija-napomene">
