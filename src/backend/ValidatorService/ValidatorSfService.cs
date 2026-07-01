@@ -166,6 +166,20 @@ internal sealed class ValidatorSfService : StatelessService, IValidatorService
             : RezultatValidacijeDto.Neuspjesno(greske));
     }
 
+    public Task<RezultatValidacijeDto> ValidirajStavkuCheckListeAsync(StavkaCheckListeUpisDto zahtjev)
+    {
+        var greske = new List<string>();
+
+        if (string.IsNullOrWhiteSpace(zahtjev.Naziv))
+        {
+            greske.Add("Naziv stavke checkliste je obavezan.");
+        }
+
+        return Task.FromResult(greske.Count == 0
+            ? RezultatValidacijeDto.Uspjesno()
+            : RezultatValidacijeDto.Neuspjesno(greske));
+    }
+
     public Task<RezultatValidacijeDto> ValidateShareAccessAsync(string token, ShareAccessType requiredAccess)
     {
         if (string.IsNullOrWhiteSpace(token))

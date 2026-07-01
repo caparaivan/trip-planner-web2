@@ -19,7 +19,7 @@ public sealed class AppDbContext : DbContext
 
     public DbSet<TrosakEntity> Troskovi => Set<TrosakEntity>();
 
-    public DbSet<ChecklistItemEntity> ChecklistItems => Set<ChecklistItemEntity>();
+    public DbSet<StavkaCheckListeEntity> StavkeCheckListe => Set<StavkaCheckListeEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -92,10 +92,11 @@ public sealed class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        modelBuilder.Entity<ChecklistItemEntity>(stavka =>
+        modelBuilder.Entity<StavkaCheckListeEntity>(stavka =>
         {
+            stavka.ToTable("StavkeCheckListe");
             stavka.HasKey(s => s.Id);
-            stavka.Property(s => s.Title).HasMaxLength(160).IsRequired();
+            stavka.Property(s => s.Naziv).HasMaxLength(160).IsRequired();
             stavka.HasOne(s => s.PlanPutovanja)
                 .WithMany(plan => plan.StavkeCheckListe)
                 .HasForeignKey(s => s.PlanPutovanjaId)

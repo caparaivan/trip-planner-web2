@@ -13,5 +13,7 @@ public interface IValidatorService : IService
 
     Task<RezultatValidacijeDto> ValidirajTrosakAsync(TrosakUpisDto zahtjev);
 
+    Task<RezultatValidacijeDto> ValidirajStavkuCheckListeAsync(StavkaCheckListeUpisDto zahtjev);
+
     Task<RezultatValidacijeDto> ValidateShareAccessAsync(string token, ShareAccessType requiredAccess);
 }

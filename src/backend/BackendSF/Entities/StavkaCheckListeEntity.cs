@@ -1,6 +1,6 @@
 namespace BackendSF.Entities;
 
-public sealed class ChecklistItemEntity
+public sealed class StavkaCheckListeEntity
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 
@@ -8,7 +8,7 @@ public sealed class ChecklistItemEntity
 
     public PlanPutovanjaEntity? PlanPutovanja { get; set; }
 
-    public string Title { get; set; } = string.Empty;
+    public string Naziv { get; set; } = string.Empty;
 
-    public bool IsDone { get; set; }
+    public bool Zavrseno { get; set; }
 }
